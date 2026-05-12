@@ -1,0 +1,523 @@
+[1;34m>>>[0m Generating /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/temp/cloud-vars.yml
+[1;34m>>>[0m Generated vars file with 15 variables
+[1;34m>>>[0m Running: playbooks/06-sonarqube.yml
+[1;35m[WARNING]: Unable to parse /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/inventory as an inventory source[0m
+[1;35m[WARNING]: No inventory was parsed, only implicit localhost is available[0m
+[1;35m[WARNING]: provided hosts list is empty, only localhost is available. Note that the implicit localhost does not match 'all'[0m
+
+PLAY [Deploy SonarQube Community Build to CICD AKS] ****************************
+
+TASK [Create cicd namespace] ***************************************************
+Thursday 07 May 2026  12:26:07 +0400 (0:00:00.060)       0:00:00.060 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Initialize CICD secrets] *************************************************
+Thursday 07 May 2026  12:26:10 +0400 (0:00:03.023)       0:00:03.084 ********** 
+[1;35m[WARNING]: Encountered 1 template error.[0m
+[1;35merror 1 - 'item' is undefined[0m
+[1;35mOrigin: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/06-sonarqube.yml:58:13[0m
+[1;35m[0m
+[1;35m56       tags: [sonarqube, secrets][0m
+[1;35m57[0m
+[1;35m58     - name: "Fetch {{ item.key }} from credential store"[0m
+[1;35m               ^ column 13[0m
+[1;35m[0m
+[0;32mok: [localhost][0m
+
+TASK [Fetch << error 1 - 'item' is undefined >> from credential store] *********
+Thursday 07 May 2026  12:26:10 +0400 (0:00:00.014)       0:00:03.098 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=github_ssh_key)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=browserstack_username)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=browserstack_access_key)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=asc_key_id)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=asc_issuer_id)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=asc_key_content)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=sonarqube_token)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=okd_deployer_token)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=sonarqube_admin_password)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=sonarqube_current_admin_password)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=sonarqube_db_password)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=sonarqube_monitoring_passcode)[0m
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/fetch-and-store-secret.yaml for localhost => (item=sonarqube_saml_cert)[0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:10 +0400 (0:00:00.062)       0:00:03.160 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:10 +0400 (0:00:00.018)       0:00:03.179 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-github-ssh-key from Azure Key Vault] **************************
+Thursday 07 May 2026  12:26:10 +0400 (0:00:00.011)       0:00:03.190 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-github-ssh-key from Azure Key Vault] ****************************
+Thursday 07 May 2026  12:26:10 +0400 (0:00:00.036)       0:00:03.226 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:03.140)       0:00:06.367 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:00.028)       0:00:06.396 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:00.017)       0:00:06.414 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:00.019)       0:00:06.433 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:00.011)       0:00:06.444 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-browserstack-username from Azure Key Vault] *******************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:00.010)       0:00:06.454 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-browserstack-username from Azure Key Vault] *********************
+Thursday 07 May 2026  12:26:13 +0400 (0:00:00.022)       0:00:06.477 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:16 +0400 (0:00:03.459)       0:00:09.936 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:16 +0400 (0:00:00.020)       0:00:09.956 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:16 +0400 (0:00:00.017)       0:00:09.974 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:16 +0400 (0:00:00.018)       0:00:09.992 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:16 +0400 (0:00:00.010)       0:00:10.003 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-browserstack-access-key from Azure Key Vault] *****************
+Thursday 07 May 2026  12:26:16 +0400 (0:00:00.010)       0:00:10.013 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-browserstack-access-key from Azure Key Vault] *******************
+Thursday 07 May 2026  12:26:17 +0400 (0:00:00.021)       0:00:10.035 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:20 +0400 (0:00:03.919)       0:00:13.955 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:20 +0400 (0:00:00.021)       0:00:13.976 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:20 +0400 (0:00:00.018)       0:00:13.995 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:20 +0400 (0:00:00.019)       0:00:14.015 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:20 +0400 (0:00:00.011)       0:00:14.026 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-asc-key-id from Azure Key Vault] ******************************
+Thursday 07 May 2026  12:26:21 +0400 (0:00:00.011)       0:00:14.038 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-asc-key-id from Azure Key Vault] ********************************
+Thursday 07 May 2026  12:26:21 +0400 (0:00:00.023)       0:00:14.061 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:03.126)       0:00:17.187 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:00.022)       0:00:17.209 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:00.017)       0:00:17.227 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:00.019)       0:00:17.247 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:00.012)       0:00:17.259 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-asc-issuer-id from Azure Key Vault] ***************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:00.011)       0:00:17.270 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-asc-issuer-id from Azure Key Vault] *****************************
+Thursday 07 May 2026  12:26:24 +0400 (0:00:00.022)       0:00:17.293 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:03.019)       0:00:20.313 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:00.021)       0:00:20.335 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:00.017)       0:00:20.352 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:00.019)       0:00:20.372 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:00.012)       0:00:20.384 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-asc-key-content from Azure Key Vault] *************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:00.011)       0:00:20.395 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-asc-key-content from Azure Key Vault] ***************************
+Thursday 07 May 2026  12:26:27 +0400 (0:00:00.022)       0:00:20.418 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:05.129)       0:00:25.547 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:00.021)       0:00:25.569 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:00.017)       0:00:25.587 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:00.019)       0:00:25.606 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:00.011)       0:00:25.618 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-sonarqube-token from Azure Key Vault] *************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:00.011)       0:00:25.629 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-sonarqube-token from Azure Key Vault] ***************************
+Thursday 07 May 2026  12:26:32 +0400 (0:00:00.021)       0:00:25.651 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:03.057)       0:00:28.709 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:00.021)       0:00:28.730 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:00.017)       0:00:28.748 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:00.019)       0:00:28.768 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:00.011)       0:00:28.780 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-okd-deployer-token from Azure Key Vault] **********************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:00.010)       0:00:28.790 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-okd-deployer-token from Azure Key Vault] ************************
+Thursday 07 May 2026  12:26:35 +0400 (0:00:00.022)       0:00:28.813 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:03.090)       0:00:31.903 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:00.021)       0:00:31.924 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:00.019)       0:00:31.943 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:00.020)       0:00:31.964 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:00.013)       0:00:31.978 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-sonarqube-admin-password from Azure Key Vault] ****************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:00.014)       0:00:31.992 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-sonarqube-admin-password from Azure Key Vault] ******************
+Thursday 07 May 2026  12:26:38 +0400 (0:00:00.023)       0:00:32.016 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:41 +0400 (0:00:02.862)       0:00:34.879 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:41 +0400 (0:00:00.021)       0:00:34.901 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:41 +0400 (0:00:00.017)       0:00:34.918 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:41 +0400 (0:00:00.019)       0:00:34.938 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:41 +0400 (0:00:00.011)       0:00:34.949 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-sonarqube-current-admin-password from Azure Key Vault] ********
+Thursday 07 May 2026  12:26:41 +0400 (0:00:00.011)       0:00:34.961 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-sonarqube-current-admin-password from Azure Key Vault] **********
+Thursday 07 May 2026  12:26:41 +0400 (0:00:00.022)       0:00:34.983 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:02.661)       0:00:37.645 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:00.021)       0:00:37.666 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:00.017)       0:00:37.684 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:00.019)       0:00:37.703 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:00.011)       0:00:37.715 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-sonarqube-db-password from Azure Key Vault] *******************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:00.010)       0:00:37.725 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-sonarqube-db-password from Azure Key Vault] *********************
+Thursday 07 May 2026  12:26:44 +0400 (0:00:00.022)       0:00:37.748 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:47 +0400 (0:00:02.603)       0:00:40.352 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:47 +0400 (0:00:00.020)       0:00:40.372 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:47 +0400 (0:00:00.016)       0:00:40.388 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:47 +0400 (0:00:00.019)       0:00:40.408 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:47 +0400 (0:00:00.011)       0:00:40.419 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-sonarqube-monitoring-passcode from Azure Key Vault] ***********
+Thursday 07 May 2026  12:26:47 +0400 (0:00:00.010)       0:00:40.430 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-sonarqube-monitoring-passcode from Azure Key Vault] *************
+Thursday 07 May 2026  12:26:47 +0400 (0:00:00.021)       0:00:40.452 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:02.607)       0:00:43.059 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:00.020)       0:00:43.080 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:00.016)       0:00:43.097 ********** 
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:00.020)       0:00:43.118 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/credential-stores-get-secret.yaml for localhost[0m
+
+TASK [Reset credential store result] *******************************************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:00.014)       0:00:43.132 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Fetch cicd-sonarqube-saml-cert from Azure Key Vault] *********************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:00.012)       0:00:43.144 ********** 
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/inc/credential-stores/azure_kv/get-secret.yaml for localhost[0m
+
+TASK [Get cicd-sonarqube-saml-cert from Azure Key Vault] ***********************
+Thursday 07 May 2026  12:26:50 +0400 (0:00:00.023)       0:00:43.168 ********** 
+[0;32mok: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:52 +0400 (0:00:02.834)       0:00:46.002 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Console store — skip read (write-only)] **********************************
+Thursday 07 May 2026  12:26:52 +0400 (0:00:00.021)       0:00:46.024 ********** 
+[0;36mskipping: [localhost][0m
+
+TASK [set_fact] ****************************************************************
+Thursday 07 May 2026  12:26:53 +0400 (0:00:00.017)       0:00:46.042 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Validate required SonarQube secrets were retrieved] **********************
+Thursday 07 May 2026  12:26:53 +0400 (0:00:00.020)       0:00:46.063 ********** 
+[1;35m[WARNING]: Deprecation warnings can be disabled by setting `deprecation_warnings=False` in ansible.cfg.[0m
+[0;35m[DEPRECATION WARNING]: Conditionals should not be surrounded by templating delimiters such as {{ }} or {% %}. This feature will be removed from ansible-core version 2.23.[0m
+[0;35mOrigin: /Users/mohd.tahir/DevWorkspace/eng-infra/cicd/ansible/playbooks/06-sonarqube.yml:67:15[0m
+[0;35m[0m
+[0;35m65     - name: Validate required SonarQube secrets were retrieved[0m
+[0;35m66       assert:[0m
+[0;35m67         that: "{{ _cicd_secrets[item] | default('') | length > 0 }}"[0m
+[0;35m                 ^ column 15[0m
+[0;35m[0m
+[0;32mok: [localhost] => (item=sonarqube_admin_password) => {[0m
+[0;32m    "ansible_loop_var": "item",[0m
+[0;32m    "changed": false,[0m
+[0;32m    "item": "sonarqube_admin_password",[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+[0;32mok: [localhost] => (item=sonarqube_current_admin_password) => {[0m
+[0;32m    "ansible_loop_var": "item",[0m
+[0;32m    "changed": false,[0m
+[0;32m    "item": "sonarqube_current_admin_password",[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+[0;32mok: [localhost] => (item=sonarqube_db_password) => {[0m
+[0;32m    "ansible_loop_var": "item",[0m
+[0;32m    "changed": false,[0m
+[0;32m    "item": "sonarqube_db_password",[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+[0;32mok: [localhost] => (item=sonarqube_monitoring_passcode) => {[0m
+[0;32m    "ansible_loop_var": "item",[0m
+[0;32m    "changed": false,[0m
+[0;32m    "item": "sonarqube_monitoring_passcode",[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+[0;32mok: [localhost] => (item=sonarqube_saml_cert) => {[0m
+[0;32m    "ansible_loop_var": "item",[0m
+[0;32m    "changed": false,[0m
+[0;32m    "item": "sonarqube_saml_cert",[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+[0;32mok: [localhost] => (item=sonarqube_token) => {[0m
+[0;32m    "ansible_loop_var": "item",[0m
+[0;32m    "changed": false,[0m
+[0;32m    "item": "sonarqube_token",[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+
+TASK [Build secret.properties content] *****************************************
+Thursday 07 May 2026  12:26:53 +0400 (0:00:00.079)       0:00:46.142 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Create sonarqube-credentials K8s Secret] *********************************
+Thursday 07 May 2026  12:26:53 +0400 (0:00:00.010)       0:00:46.153 ********** 
+[0;33mchanged: [localhost][0m
+
+TASK [Add SonarSource Helm repo] ***********************************************
+Thursday 07 May 2026  12:26:55 +0400 (0:00:02.854)       0:00:49.008 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Update SonarSource Helm repo] ********************************************
+Thursday 07 May 2026  12:26:56 +0400 (0:00:00.492)       0:00:49.500 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Render SonarQube values file (substitute SAML application id)] ***********
+Thursday 07 May 2026  12:26:57 +0400 (0:00:01.510)       0:00:51.010 ********** 
+[0;33mchanged: [localhost][0m
+
+TASK [Deploy SonarQube via Helm] ***********************************************
+Thursday 07 May 2026  12:26:58 +0400 (0:00:00.773)       0:00:51.783 ********** 
+[0;33mchanged: [localhost][0m
+
+TASK [Patch SonarQube SA with Workload Identity annotation] ********************
+Thursday 07 May 2026  12:28:49 +0400 (0:01:51.218)       0:02:43.002 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Wait for SonarQube StatefulSet ready] ************************************
+Thursday 07 May 2026  12:28:52 +0400 (0:00:02.539)       0:02:45.541 ********** 
+[0;32mok: [localhost][0m
+
+TASK [Remove rendered values file] *********************************************
+Thursday 07 May 2026  12:29:06 +0400 (0:00:14.471)       0:03:00.012 ********** 
+[0;33mchanged: [localhost][0m
+
+TASK [Done] ********************************************************************
+Thursday 07 May 2026  12:29:07 +0400 (0:00:00.468)       0:03:00.481 ********** 
+[0;32mok: [localhost] => {[0m
+[0;32m    "msg": "SonarQube deployed to CICD AKS:\n  Namespace:           cicd\n  URL:                 https://sonarqube.takamul.cc/\n  Workload Identity:   4a6f4080-7d5f-4211-a2ea-4967379df187\n  Helm version:        2026.2.1\n  K8s Secret:          sonarqube-credentials\nAll secrets sourced from credential store (Azure Key Vault).\nNext: T09 (Cloudflare tunnel rule) → T10 (admin login + token) → T11 (e2e verify).\n"[0m
+[0;32m}[0m
+
+PLAY RECAP *********************************************************************
+[0;33mlocalhost[0m                  : [0;32mok=104 [0m [0;33mchanged=4   [0m unreachable=0    failed=0    [0;36mskipped=13  [0m rescued=0    ignored=0   
+
+
+TASKS RECAP ********************************************************************
+Thursday 07 May 2026  12:29:07 +0400 (0:00:00.020)       0:03:00.501 ********** 
+=============================================================================== 
+Deploy SonarQube via Helm --------------------------------------------- 111.22s
+Wait for SonarQube StatefulSet ready ----------------------------------- 14.47s
+Get cicd-asc-key-content from Azure Key Vault --------------------------- 5.13s
+Get cicd-browserstack-access-key from Azure Key Vault ------------------- 3.92s
+Get cicd-browserstack-username from Azure Key Vault --------------------- 3.46s
+Get cicd-github-ssh-key from Azure Key Vault ---------------------------- 3.14s
+Get cicd-asc-key-id from Azure Key Vault -------------------------------- 3.13s
+Get cicd-okd-deployer-token from Azure Key Vault ------------------------ 3.09s
+Get cicd-sonarqube-token from Azure Key Vault --------------------------- 3.06s
+Create cicd namespace --------------------------------------------------- 3.02s
+Get cicd-asc-issuer-id from Azure Key Vault ----------------------------- 3.02s
+Get cicd-sonarqube-admin-password from Azure Key Vault ------------------ 2.86s
+Create sonarqube-credentials K8s Secret --------------------------------- 2.85s
+Get cicd-sonarqube-saml-cert from Azure Key Vault ----------------------- 2.83s
+Get cicd-sonarqube-current-admin-password from Azure Key Vault ---------- 2.66s
+Get cicd-sonarqube-monitoring-passcode from Azure Key Vault ------------- 2.61s
+Get cicd-sonarqube-db-password from Azure Key Vault --------------------- 2.60s
+Patch SonarQube SA with Workload Identity annotation -------------------- 2.54s
+Update SonarSource Helm repo -------------------------------------------- 1.51s
+Render SonarQube values file (substitute SAML application id) ----------- 0.77s

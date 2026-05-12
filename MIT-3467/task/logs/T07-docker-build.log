@@ -1,0 +1,84 @@
+#0 building with "desktop-linux" instance using docker driver
+
+#1 [internal] load build definition from Dockerfile
+#1 transferring dockerfile: 2.07kB 0.0s done
+#1 DONE 0.0s
+
+#2 [internal] load metadata for docker.io/alpine/k8s:1.32.11
+#2 DONE 1.6s
+
+#3 [internal] load .dockerignore
+#3 transferring context: 2B done
+#3 DONE 0.0s
+
+#4 [1/6] FROM docker.io/alpine/k8s:1.32.11@sha256:1f61dd2f04b7ec000632bdccf35a0658a475fb52fb175a78ae240ebedab83152
+#4 resolve docker.io/alpine/k8s:1.32.11@sha256:1f61dd2f04b7ec000632bdccf35a0658a475fb52fb175a78ae240ebedab83152 done
+#4 DONE 0.0s
+
+#5 [3/6] RUN curl -sL "https://github.com/okd-project/okd/releases/download/4.21.0-okd-scos.7/openshift-client-linux-4.21.0-okd-scos.7.tar.gz"     | tar xz -C /usr/local/bin oc &&     chmod +x /usr/local/bin/oc
+#5 CACHED
+
+#6 [2/6] RUN apk add --no-cache gcompat python3 py3-pip &&     pip3 install --no-cache-dir --break-system-packages         ansible-core         kubernetes         jmespath         azure-cli
+#6 CACHED
+
+#7 [4/6] RUN ansible-galaxy collection install kubernetes.core
+#7 CACHED
+
+#8 [5/6] RUN apk add --no-cache unzip openjdk17-jre-headless &&     curl -sSL "https://binaries.sonarsource.com/Distribution/sonar-scanner-cli/sonar-scanner-cli-6.2.1.4610.zip" -o /tmp/sonar.zip &&     unzip -q /tmp/sonar.zip -d /opt &&     mv "/opt/sonar-scanner-6.2.1.4610" /opt/sonar-scanner &&     ln -s /opt/sonar-scanner/bin/sonar-scanner /usr/local/bin/sonar-scanner &&     rm /tmp/sonar.zip &&     sonar-scanner --version
+#8 1.134 (1/7) Installing java-common (1.0-r2)
+#8 1.302 (2/7) Installing libtasn1 (4.21.0-r0)
+#8 1.378 (3/7) Installing p11-kit (0.25.5-r2)
+#8 1.456 (4/7) Installing p11-kit-trust (0.25.5-r2)
+#8 1.516 (5/7) Installing java-cacerts (1.1-r0)
+#8 1.570 (6/7) Installing openjdk17-jre-headless (17.0.18_p8-r0)
+#8 6.434 (7/7) Installing unzip (6.0-r16)
+#8 6.518 Executing busybox-1.37.0-r30.trigger
+#8 6.533 Executing ca-certificates-20251003-r0.trigger
+#8 6.643 Executing java-common-1.0-r2.trigger
+#8 6.693 OK: 274.5 MiB in 75 packages
+#8 8.761 07:37:38.227 INFO  Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+#8 8.762 07:37:38.231 INFO  Project root configuration file: NONE
+#8 8.784 07:37:38.253 INFO  SonarScanner CLI 6.2.1.4610
+#8 8.790 07:37:38.259 INFO  Java 17.0.18 Alpine (64-bit)
+#8 8.792 07:37:38.262 INFO  Linux 6.10.14-linuxkit amd64
+#8 DONE 9.0s
+
+#9 [6/6] RUN kubectl version --client &&     oc version --client &&     az version &&     ansible --version &&     helm version --short &&     sonar-scanner --version
+#9 0.228 Client Version: v1.32.11
+#9 0.228 Kustomize Version: v5.5.0
+#9 0.480 Client Version: 4.21.0-okd-scos.7
+#9 0.480 Kustomize Version: v5.7.1
+#9 5.637 {
+#9 5.637   "azure-cli": "2.85.0",
+#9 5.637   "azure-cli-core": "2.85.0",
+#9 5.637   "azure-cli-telemetry": "1.1.0",
+#9 5.637   "extensions": {}
+#9 5.637 }
+#9 6.024 ansible [core 2.20.5]
+#9 6.024   config file = None
+#9 6.024   configured module search path = ['/root/.ansible/plugins/modules', '/usr/share/ansible/plugins/modules']
+#9 6.024   ansible python module location = /usr/lib/python3.12/site-packages/ansible
+#9 6.024   ansible collection location = /root/.ansible/collections:/usr/share/ansible/collections
+#9 6.024   executable location = /usr/bin/ansible
+#9 6.024   python version = 3.12.12 (main, Oct 11 2025, 01:16:26) [GCC 15.2.0] (/usr/bin/python3)
+#9 6.024   jinja version = 3.1.6
+#9 6.024   pyyaml version = 6.0.3 (with libyaml v0.2.5)
+#9 6.199 v4.0.4+g8650e1d
+#9 6.822 07:37:45.246 INFO  Scanner configuration file: /opt/sonar-scanner/conf/sonar-scanner.properties
+#9 6.823 07:37:45.252 INFO  Project root configuration file: NONE
+#9 6.852 07:37:45.281 INFO  SonarScanner CLI 6.2.1.4610
+#9 6.860 07:37:45.288 INFO  Java 17.0.18 Alpine (64-bit)
+#9 6.862 07:37:45.291 INFO  Linux 6.10.14-linuxkit amd64
+#9 DONE 6.9s
+
+#10 exporting to image
+#10 exporting layers
+#10 exporting layers 8.4s done
+#10 exporting manifest sha256:186e37d7f5ca80cb667525c920fed57088b6982a034ddde29ff0397eaa0f953d done
+#10 exporting config sha256:17ed16d3981f6d298fd48986d90b886c29c71469d7fea6766432093149e1327e done
+#10 exporting attestation manifest sha256:9d4d0d204696bea88222db84d3497d8db0cd3641807d22e96bfa39c1e32c5f8d done
+#10 exporting manifest list sha256:5c01ce38d46bd08b9a38b0f7fd1acf6d73f268e1107cc95e767636da21b93391 done
+#10 naming to mithrilacr.azurecr.io/cicd-agent:sonar-14c6508 done
+#10 DONE 8.4s
+
+View build details: docker-desktop://dashboard/build/desktop-linux/desktop-linux/il7pk96bvetecv3lzhc8tfk79

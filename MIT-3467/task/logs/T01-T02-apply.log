@@ -1,0 +1,261 @@
+Acquiring state lock. This may take a few moments...
+[0m[1mdata.azuread_client_config.current: Reading...[0m[0m
+[0m[1mdata.azuread_client_config.current: Read complete after 0s [id=af9e95b7-e99f-4ec1-9b02-429ffdc27b4e-04b07795-8ddb-461a-bbee-02f9e1bf7b46-3cebe077-64e5-49e1-95b9-19c58842d030][0m
+[0m[1mazurerm_resource_group.cicd: Refreshing state... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd][0m
+[0m[1mazurerm_user_assigned_identity.aks: Refreshing state... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mithril-mi-aks][0m
+[0m[1mazurerm_virtual_network.cicd: Refreshing state... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.Network/virtualNetworks/mithril-vnet-cicd][0m
+[0m[1mazurerm_subnet.aks: Refreshing state... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.Network/virtualNetworks/mithril-vnet-cicd/subnets/mithril-snet-cicd-aks][0m
+[0m[1mazurerm_kubernetes_cluster.cicd: Refreshing state... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ContainerService/managedClusters/mithril-aks-cicd][0m
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  [32m+[0m create[0m
+  [33m~[0m update in-place[0m
+
+Terraform will perform the following actions:
+
+[1m  # azuread_app_role_assignment.sonarqube_saml_devops_admin[0m will be created
+[0m  [32m+[0m[0m resource "azuread_app_role_assignment" "sonarqube_saml_devops_admin" {
+      [32m+[0m[0m app_role_id            = "00000000-0000-0000-0000-000000000000"
+      [32m+[0m[0m id                     = (known after apply)
+      [32m+[0m[0m principal_display_name = (known after apply)
+      [32m+[0m[0m principal_object_id    = "0309fec6-57e6-4446-bf4f-af084823d03a"
+      [32m+[0m[0m principal_type         = (known after apply)
+      [32m+[0m[0m resource_display_name  = (known after apply)
+      [32m+[0m[0m resource_object_id     = (known after apply)
+    }
+
+[1m  # azuread_application.sonarqube_saml[0m will be created
+[0m  [32m+[0m[0m resource "azuread_application" "sonarqube_saml" {
+      [32m+[0m[0m app_role_ids                = (known after apply)
+      [32m+[0m[0m client_id                   = (known after apply)
+      [32m+[0m[0m disabled_by_microsoft       = (known after apply)
+      [32m+[0m[0m display_name                = "SonarQube SSO"
+      [32m+[0m[0m group_membership_claims     = [
+          [32m+[0m[0m "SecurityGroup",
+        ]
+      [32m+[0m[0m id                          = (known after apply)
+      [32m+[0m[0m identifier_uris             = [
+          [32m+[0m[0m "api://af9e95b7-e99f-4ec1-9b02-429ffdc27b4e/sonarqube-sso",
+        ]
+      [32m+[0m[0m logo_url                    = (known after apply)
+      [32m+[0m[0m oauth2_permission_scope_ids = (known after apply)
+      [32m+[0m[0m object_id                   = (known after apply)
+      [32m+[0m[0m prevent_duplicate_names     = false
+      [32m+[0m[0m publisher_domain            = (known after apply)
+      [32m+[0m[0m sign_in_audience            = "AzureADMyOrg"
+      [32m+[0m[0m tags                        = (known after apply)
+      [32m+[0m[0m template_id                 = (known after apply)
+
+      [32m+[0m[0m feature_tags (known after apply)
+
+      [32m+[0m[0m optional_claims {
+          [32m+[0m[0m saml2_token {
+              [32m+[0m[0m essential = false
+              [32m+[0m[0m name      = "groups"
+            }
+        }
+
+      [32m+[0m[0m required_resource_access {
+          [32m+[0m[0m resource_app_id = "00000003-0000-0000-c000-000000000000"
+
+          [32m+[0m[0m resource_access {
+              [32m+[0m[0m id   = "e1fe6dd8-ba31-4d61-89e7-88639da4683d"
+              [32m+[0m[0m type = "Scope"
+            }
+          [32m+[0m[0m resource_access {
+              [32m+[0m[0m id   = "64a6cdd6-aab1-4aaf-94b8-3cc8405e90d0"
+              [32m+[0m[0m type = "Scope"
+            }
+          [32m+[0m[0m resource_access {
+              [32m+[0m[0m id   = "14dad69e-099b-42c9-810b-d002981feec1"
+              [32m+[0m[0m type = "Scope"
+            }
+        }
+
+      [32m+[0m[0m web {
+          [32m+[0m[0m homepage_url  = "https://sonarqube.takamul.cc/"
+          [32m+[0m[0m redirect_uris = [
+              [32m+[0m[0m "https://sonarqube.takamul.cc/oauth2/callback/saml",
+            ]
+        }
+    }
+
+[1m  # azuread_service_principal.sonarqube_saml[0m will be created
+[0m  [32m+[0m[0m resource "azuread_service_principal" "sonarqube_saml" {
+      [32m+[0m[0m account_enabled               = true
+      [32m+[0m[0m app_role_ids                  = (known after apply)
+      [32m+[0m[0m app_roles                     = (known after apply)
+      [32m+[0m[0m application_tenant_id         = (known after apply)
+      [32m+[0m[0m client_id                     = (known after apply)
+      [32m+[0m[0m display_name                  = (known after apply)
+      [32m+[0m[0m homepage_url                  = (known after apply)
+      [32m+[0m[0m id                            = (known after apply)
+      [32m+[0m[0m logout_url                    = (known after apply)
+      [32m+[0m[0m oauth2_permission_scope_ids   = (known after apply)
+      [32m+[0m[0m oauth2_permission_scopes      = (known after apply)
+      [32m+[0m[0m object_id                     = (known after apply)
+      [32m+[0m[0m preferred_single_sign_on_mode = "saml"
+      [32m+[0m[0m redirect_uris                 = (known after apply)
+      [32m+[0m[0m saml_metadata_url             = (known after apply)
+      [32m+[0m[0m service_principal_names       = (known after apply)
+      [32m+[0m[0m sign_in_audience              = (known after apply)
+      [32m+[0m[0m tags                          = (known after apply)
+      [32m+[0m[0m type                          = (known after apply)
+
+      [32m+[0m[0m feature_tags {
+          [32m+[0m[0m enterprise = true
+        }
+
+      [32m+[0m[0m features (known after apply)
+    }
+
+[1m  # azuread_service_principal_token_signing_certificate.sonarqube_saml[0m will be created
+[0m  [32m+[0m[0m resource "azuread_service_principal_token_signing_certificate" "sonarqube_saml" {
+      [32m+[0m[0m display_name         = "CN=SonarQube SSO Signing"
+      [32m+[0m[0m end_date             = (known after apply)
+      [32m+[0m[0m id                   = (known after apply)
+      [32m+[0m[0m key_id               = (known after apply)
+      [32m+[0m[0m service_principal_id = (known after apply)
+      [32m+[0m[0m start_date           = (known after apply)
+      [32m+[0m[0m thumbprint           = (known after apply)
+      [32m+[0m[0m value                = (sensitive value)
+    }
+
+[1m  # azurerm_federated_identity_credential.sonarqube[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_federated_identity_credential" "sonarqube" {
+      [32m+[0m[0m audience            = [
+          [32m+[0m[0m "api://AzureADTokenExchange",
+        ]
+      [32m+[0m[0m id                  = (known after apply)
+      [32m+[0m[0m issuer              = "https://uaenorth.oic.prod-aks.azure.com/af9e95b7-e99f-4ec1-9b02-429ffdc27b4e/14bed19c-1c22-47ba-882b-834c630b5dd8/"
+      [32m+[0m[0m name                = "sonarqube-federated-cred"
+      [32m+[0m[0m parent_id           = (known after apply)
+      [32m+[0m[0m resource_group_name = (known after apply)
+      [32m+[0m[0m subject             = "system:serviceaccount:cicd:sonarqube"
+    }
+
+[1m  # azurerm_key_vault_access_policy.sonarqube[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_key_vault_access_policy" "sonarqube" {
+      [32m+[0m[0m id                 = (known after apply)
+      [32m+[0m[0m key_vault_id       = "/subscriptions/7047239e-8819-4015-9344-5a7481a9439b/resourceGroups/mithril-rg-platform/providers/Microsoft.KeyVault/vaults/mithril-shared-kv"
+      [32m+[0m[0m object_id          = (known after apply)
+      [32m+[0m[0m secret_permissions = [
+          [32m+[0m[0m "Get",
+          [32m+[0m[0m "List",
+        ]
+      [32m+[0m[0m tenant_id          = (known after apply)
+    }
+
+[1m  # azurerm_kubernetes_cluster.cicd[0m will be updated in-place
+[0m  [33m~[0m[0m resource "azurerm_kubernetes_cluster" "cicd" {
+        id                                  = "/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ContainerService/managedClusters/mithril-aks-cicd"
+        name                                = "mithril-aks-cicd"
+        tags                                = {
+            "Environment" = "cicd"
+            "ManagedBy"   = "terraform"
+            "Project"     = "mithril"
+        }
+        [90m# (37 unchanged attributes hidden)[0m[0m
+
+      [33m~[0m[0m default_node_pool {
+            name                          = "cicd"
+            tags                          = {}
+            [90m# (31 unchanged attributes hidden)[0m[0m
+
+          [31m-[0m[0m upgrade_settings {
+              [31m-[0m[0m drain_timeout_in_minutes      = 0 [90m-> null[0m[0m
+              [31m-[0m[0m max_surge                     = "10%" [90m-> null[0m[0m
+              [31m-[0m[0m node_soak_duration_in_minutes = 0 [90m-> null[0m[0m
+                [90m# (1 unchanged attribute hidden)[0m[0m
+            }
+        }
+
+        [90m# (7 unchanged blocks hidden)[0m[0m
+    }
+
+[1m  # azurerm_user_assigned_identity.sonarqube[0m will be created
+[0m  [32m+[0m[0m resource "azurerm_user_assigned_identity" "sonarqube" {
+      [32m+[0m[0m client_id           = (known after apply)
+      [32m+[0m[0m id                  = (known after apply)
+      [32m+[0m[0m location            = "uaenorth"
+      [32m+[0m[0m name                = "mithril-mi-sonarqube"
+      [32m+[0m[0m principal_id        = (known after apply)
+      [32m+[0m[0m resource_group_name = "mithril-rg-cicd"
+      [32m+[0m[0m tags                = {
+          [32m+[0m[0m "Environment" = "cicd"
+          [32m+[0m[0m "ManagedBy"   = "terraform"
+          [32m+[0m[0m "Project"     = "mithril"
+        }
+      [32m+[0m[0m tenant_id           = (known after apply)
+    }
+
+[1mPlan:[0m [0m7 to add, 1 to change, 0 to destroy.
+
+Changes to Outputs:
+  [32m+[0m[0m sonarqube_identity_client_id           = (known after apply)
+  [32m+[0m[0m sonarqube_identity_principal_id        = (known after apply)
+  [32m+[0m[0m sonarqube_saml_application_id          = (known after apply)
+  [32m+[0m[0m sonarqube_saml_login_url               = "https://login.microsoftonline.com/af9e95b7-e99f-4ec1-9b02-429ffdc27b4e/saml2"
+  [32m+[0m[0m sonarqube_saml_object_id               = (known after apply)
+  [32m+[0m[0m sonarqube_saml_signing_cert_pem        = (sensitive value)
+  [32m+[0m[0m sonarqube_saml_signing_cert_thumbprint = (known after apply)
+[0m[1mazuread_application.sonarqube_saml: Creating...[0m[0m
+[0m[1mazurerm_user_assigned_identity.sonarqube: Creating...[0m[0m
+[0m[1mazurerm_kubernetes_cluster.cicd: Modifying... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ContainerService/managedClusters/mithril-aks-cicd][0m[0m
+[0m[1mazurerm_user_assigned_identity.sonarqube: Creation complete after 5s [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mithril-mi-sonarqube][0m
+[0m[1mazurerm_key_vault_access_policy.sonarqube: Creating...[0m[0m
+[0m[1mazurerm_kubernetes_cluster.cicd: Still modifying... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-...rvice/managedClusters/mithril-aks-cicd, 00m10s elapsed][0m[0m
+[0m[1mazurerm_key_vault_access_policy.sonarqube: Creation complete after 8s [id=/subscriptions/7047239e-8819-4015-9344-5a7481a9439b/resourceGroups/mithril-rg-platform/providers/Microsoft.KeyVault/vaults/mithril-shared-kv/objectId/443af500-2eaa-4509-93ca-1f80750528df][0m
+[0m[1mazurerm_kubernetes_cluster.cicd: Still modifying... [id=/subscriptions/6fdc2633-addd-4eb2-98cf-...rvice/managedClusters/mithril-aks-cicd, 00m20s elapsed][0m[0m
+[0m[1mazurerm_kubernetes_cluster.cicd: Modifications complete after 23s [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ContainerService/managedClusters/mithril-aks-cicd][0m
+[0m[1mazurerm_federated_identity_credential.sonarqube: Creating...[0m[0m
+[0m[1mazurerm_federated_identity_credential.sonarqube: Creation complete after 2s [id=/subscriptions/6fdc2633-addd-4eb2-98cf-2ff8425f0fe9/resourceGroups/mithril-rg-cicd/providers/Microsoft.ManagedIdentity/userAssignedIdentities/mithril-mi-sonarqube/federatedIdentityCredentials/sonarqube-federated-cred][0m
+[33m╷[0m[0m
+[33m│[0m [0m[1m[33mWarning: [0m[0m[1mResource targeting is in effect[0m
+[33m│[0m [0m
+[33m│[0m [0m[0mYou are creating a plan with the -target option, which means that the
+[33m│[0m [0mresult of this plan may not represent all of the changes requested by the
+[33m│[0m [0mcurrent configuration.
+[33m│[0m [0m
+[33m│[0m [0mThe -target option is not for routine use, and is provided only for
+[33m│[0m [0mexceptional situations such as recovering from errors or mistakes, or when
+[33m│[0m [0mTerraform specifically suggests to use it as part of an error message.
+[33m╵[0m[0m
+[33m╷[0m[0m
+[33m│[0m [0m[1m[33mWarning: [0m[0m[1mApplied changes may be incomplete[0m
+[33m│[0m [0m
+[33m│[0m [0m[0mThe plan was created with the -target option in effect, so some changes
+[33m│[0m [0mrequested in the configuration may have been ignored and the output values
+[33m│[0m [0mmay not be fully updated. Run the following command to verify that no other
+[33m│[0m [0mchanges are pending:
+[33m│[0m [0m    terraform plan
+[33m│[0m [0m
+[33m│[0m [0mNote that the -target option is not suitable for routine use, and is
+[33m│[0m [0mprovided only for exceptional situations such as recovering from errors or
+[33m│[0m [0mmistakes, or when Terraform specifically suggests to use it as part of an
+[33m│[0m [0merror message.
+[33m╵[0m[0m
+[33m╷[0m[0m
+[33m│[0m [0m[1m[33mWarning: [0m[0m[1mArgument is deprecated[0m
+[33m│[0m [0m
+[33m│[0m [0m[0m  with azurerm_storage_account.artifacts,
+[33m│[0m [0m  on storage.tf line 8, in resource "azurerm_storage_account" "artifacts":
+[33m│[0m [0m   8: resource "azurerm_storage_account" "artifacts" [4m{[0m[0m
+[33m│[0m [0m
+[33m│[0m [0mthis block has been deprecated and superseded by the
+[33m│[0m [0m`azurerm_storage_account_queue_properties` resource and will be removed in
+[33m│[0m [0mv5.0 of the AzureRM provider
+[33m╵[0m[0m
+[31m╷[0m[0m
+[31m│[0m [0m[1m[31mError: [0m[0m[1mCould not create application[0m
+[31m│[0m [0m
+[31m│[0m [0m[0m  with azuread_application.sonarqube_saml,
+[31m│[0m [0m  on saml-sonarqube.tf line 15, in resource "azuread_application" "sonarqube_saml":
+[31m│[0m [0m  15: resource "azuread_application" "sonarqube_saml" [4m{[0m[0m
+[31m│[0m [0m
+[31m│[0m [0munexpected status 403 (403 Forbidden) with error:
+[31m│[0m [0mAuthorization_RequestDenied: Insufficient privileges to complete the
+[31m│[0m [0moperation.
+[31m╵[0m[0m
+Releasing state lock. This may take a few moments...

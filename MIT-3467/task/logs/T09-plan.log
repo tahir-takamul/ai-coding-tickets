@@ -1,0 +1,682 @@
+random_password.perf_tunnel_secret: Refreshing state... [id=none]
+random_password.silmarils_tunnel_secret: Refreshing state... [id=none]
+random_password.tunnel_secret_raw: Refreshing state... [id=none]
+random_password.cicd_tunnel_secret: Refreshing state... [id=none]
+random_password.jisr_tunnel_secret: Refreshing state... [id=none]
+data.azuread_client_config.current: Reading...
+data.azuread_client_config.current: Read complete after 0s [id=af9e95b7-e99f-4ec1-9b02-429ffdc27b4e-04b07795-8ddb-461a-bbee-02f9e1bf7b46-3cebe077-64e5-49e1-95b9-19c58842d030]
+azuread_application.cloudflare_access: Refreshing state... [id=/applications/6f658e92-b82a-4655-9a32-7ccd2750c8a1]
+azuread_application.jenkins_saml: Refreshing state... [id=/applications/fd29bd65-a837-43b2-8411-707ca5f6ab1e]
+azuread_service_principal.jenkins_saml: Refreshing state... [id=/servicePrincipals/ad309a2a-acd8-4872-8b6b-d1a912c4ecaf]
+azuread_application_password.cloudflare_access: Refreshing state... [id=6f658e92-b82a-4655-9a32-7ccd2750c8a1/password/46b2a6b0-917d-47c0-b9a8-3dc54087a510]
+data.azurerm_key_vault.main: Reading...
+data.azurerm_key_vault.main: Read complete after 2s [id=/subscriptions/7047239e-8819-4015-9344-5a7481a9439b/resourceGroups/mithril-rg-platform/providers/Microsoft.KeyVault/vaults/mithril-shared-kv]
+data.azurerm_key_vault_secret.cloudflare_api_token: Reading...
+data.azurerm_key_vault_secret.github_oauth_client_secret[0]: Reading...
+data.azurerm_key_vault_secret.cloudflare_api_token: Read complete after 4s [id=https://mithril-shared-kv.vault.azure.net/secrets/cloudflare-api-token/3b44ce5f9a364ac58930dcceb79ab3c0]
+data.azurerm_key_vault_secret.github_oauth_client_secret[0]: Read complete after 4s [id=https://mithril-shared-kv.vault.azure.net/secrets/github-oauth-app-client-secret/a638cf95df0a4e55bdbccf387d76d3f4]
+cloudflare_zero_trust_tunnel_cloudflared.this: Refreshing state... [id=9ca7823f-2ea9-404c-bec7-8eea63a51098]
+cloudflare_zero_trust_tunnel_cloudflared.perf: Refreshing state... [id=993e09e3-e9e3-4be3-bc16-eee890ad3826]
+cloudflare_zero_trust_tunnel_cloudflared.silmarils: Refreshing state... [id=3562f5bf-95b4-445d-980b-9c92da517c4c]
+cloudflare_zero_trust_tunnel_cloudflared.cicd: Refreshing state... [id=05426956-a683-4c1e-b9c6-0eadb23cf91f]
+cloudflare_zero_trust_tunnel_cloudflared.jisr: Refreshing state... [id=36566ad8-5ae4-48a7-8c42-6ffe7531088b]
+cloudflare_zero_trust_access_service_token.github_actions: Refreshing state... [id=828f52e8-a009-4f62-aa5f-f12c89f10895]
+cloudflare_zero_trust_access_identity_provider.azure_ad[0]: Refreshing state... [id=772a08a9-6533-4334-a078-bac63746b37f]
+cloudflare_zero_trust_access_identity_provider.github[0]: Refreshing state... [id=74c45b41-408f-4c83-ae73-2a3553f3eb5c]
+cloudflare_zero_trust_device_posture_rule.warp_client[0]: Refreshing state... [id=57d985c1-011f-434a-aac3-ec6fcb58fe75]
+cloudflare_zero_trust_local_fallback_domain.this: Refreshing state... [id=caa0be9e0dfcbcdf5ed20be838963bb8]
+cloudflare_zero_trust_access_application.cicd["jenkins.takamul.cc"]: Refreshing state... [id=0b013b66-7456-4a8d-88b8-c4db38eebf7d]
+cloudflare_zero_trust_access_application.silmarils["silmarils-keycloak.takamul.cc"]: Refreshing state... [id=de35b047-fcb6-4ba2-a618-0d7662142a33]
+cloudflare_zero_trust_access_application.silmarils["silmarils-qa-controller.takamul.cc"]: Refreshing state... [id=489144e8-a192-4ad6-8112-5fbc68a2d637]
+cloudflare_zero_trust_access_application.silmarils["silmarils-adminer.takamul.cc"]: Refreshing state... [id=87c79338-7a4d-4727-8562-77b0ad43bea1]
+cloudflare_zero_trust_access_application.silmarils["silmarils-qa-gateway-ui.takamul.cc"]: Refreshing state... [id=8b883ea0-24a1-4fdc-ac9d-a94f1368d9c1]
+cloudflare_zero_trust_access_application.silmarils["silmarils-grafana.takamul.cc"]: Refreshing state... [id=bb9c4e7e-efc2-4c74-a152-5faa5a52730f]
+cloudflare_zero_trust_access_application.silmarils["silmarils-qa-gateway.takamul.cc"]: Refreshing state... [id=5e284ee3-d9b0-4d48-9ca9-3f7743074605]
+cloudflare_zero_trust_access_application.silmarils["silmarils-qa-controller-ui.takamul.cc"]: Refreshing state... [id=30fca231-9062-406a-b1f4-8c681bcd8142]
+cloudflare_zero_trust_access_application.perf["perf-okd-console.takamul.cc"]: Refreshing state... [id=4082975e-1cb5-43b9-9214-b9463ea36bab]
+cloudflare_zero_trust_access_application.perf["mithril-perf-portal.takamul.cc"]: Refreshing state... [id=b6771101-665f-4b6d-bbb1-f0825e661c41]
+cloudflare_zero_trust_access_application.perf["mithril-perf-backend.takamul.cc"]: Refreshing state... [id=58fb390a-d986-456d-86c5-69283146dcbf]
+cloudflare_zero_trust_access_application.perf["perf-keycloak.takamul.cc"]: Refreshing state... [id=c0950e7e-521e-4212-8d63-36c355651095]
+cloudflare_zero_trust_access_application.perf["perf-grafana.takamul.cc"]: Refreshing state... [id=88348ce8-348d-4115-bcf4-7b62b32980e8]
+cloudflare_zero_trust_access_application.this["kafka-ui.takamul.cc"]: Refreshing state... [id=68faa8ca-65e8-411b-addb-24f0cfe154fa]
+cloudflare_zero_trust_access_application.this["mithril-dev-backend.takamul.cc"]: Refreshing state... [id=8859d72c-e3f2-4eaf-b2db-444561ba5bd1]
+cloudflare_zero_trust_access_application.this["grafana.takamul.cc"]: Refreshing state... [id=a7647f31-2085-472e-9a2c-02c30ea448f8]
+cloudflare_zero_trust_access_application.this["mithril-qa-backend.takamul.cc"]: Refreshing state... [id=3f9be0f1-8723-4e00-aa91-2fec41557685]
+cloudflare_zero_trust_access_application.this["mithril-dev-portal.takamul.cc"]: Refreshing state... [id=f0c02e13-32d6-421f-9746-a297c733ca7e]
+cloudflare_zero_trust_access_application.this["mithril-demo-portal.takamul.cc"]: Refreshing state... [id=b481d811-4693-457b-99d7-fe1842b83a4b]
+cloudflare_zero_trust_access_application.this["adminer.takamul.cc"]: Refreshing state... [id=0320aad2-d1fe-45e8-890d-63e6a2a6316b]
+cloudflare_zero_trust_access_application.this["mithril-staging-backend.takamul.cc"]: Refreshing state... [id=35c9c6bc-80c1-468c-8126-7182dcd5ba4c]
+cloudflare_zero_trust_access_application.this["mithril-demo-backend.takamul.cc"]: Refreshing state... [id=b98531ee-3a9f-44b5-9196-57f5ad424225]
+cloudflare_zero_trust_access_application.this["vault.takamul.cc"]: Refreshing state... [id=109fdc7c-2972-4df6-8c5c-9bb128cdf112]
+cloudflare_zero_trust_access_application.this["keycloak.takamul.cc"]: Refreshing state... [id=b17838f6-6fc1-4d81-8729-b3bd6e930c6b]
+cloudflare_zero_trust_access_application.this["mithril-staging-portal.takamul.cc"]: Refreshing state... [id=aa4ed076-971c-40bd-b161-eb9b55ff704e]
+cloudflare_zero_trust_access_application.this["mithril-qa-portal.takamul.cc"]: Refreshing state... [id=4b40828f-5a4c-4f91-8d46-17891c61fb2c]
+cloudflare_zero_trust_access_application.this["okd-console.takamul.cc"]: Refreshing state... [id=90fe95f7-0d4d-4372-9984-945ce44a2f2b]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-hkma.takamul.cc"]: Refreshing state... [id=6b08fdc1-f57d-4237-be42-8eedda7b2496]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-cbuae.takamul.cc"]: Refreshing state... [id=d2f126c8-f6b5-42c6-b7be-6aeba96ee7ec]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-fab.takamul.cc"]: Refreshing state... [id=ea6c1eef-da38-4f2a-8b26-b200b397c21d]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-bot.takamul.cc"]: Refreshing state... [id=9d418015-3fb7-447a-801e-0f3978a12faf]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-bbl.takamul.cc"]: Refreshing state... [id=31c30cff-1a86-4ccd-a51c-322f9d67862d]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-icbc.takamul.cc"]: Refreshing state... [id=3e555659-0337-4489-8f2c-1da74ceaed0b]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-pbcdci.takamul.cc"]: Refreshing state... [id=f90199a6-2145-4267-a163-a2c13866e97f]
+cloudflare_zero_trust_access_application.jisr["jisr-demo-hsbc.takamul.cc"]: Refreshing state... [id=b9dd382d-441b-4030-9502-806029d5f5aa]
+cloudflare_zero_trust_tunnel_cloudflared_config.perf: Refreshing state... [id=993e09e3-e9e3-4be3-bc16-eee890ad3826]
+cloudflare_zero_trust_tunnel_route.perf_vnet: Refreshing state... [id=10.130.0.0/20]
+cloudflare_record.perf_tunnel_ingress["perf-keycloak.takamul.cc"]: Refreshing state... [id=3fd51d24a60f8a69744d8407267ac65c]
+cloudflare_record.perf_tunnel_ingress["mithril-perf-backend.takamul.cc"]: Refreshing state... [id=0d1bb16ada4dc1d7c0dfa96096bf173b]
+cloudflare_record.perf_tunnel_ingress["perf-okd-console.takamul.cc"]: Refreshing state... [id=3d76f67ed9e5a669343908f74be1ea86]
+cloudflare_record.perf_tunnel_ingress["perf-grafana.takamul.cc"]: Refreshing state... [id=f6b2fcda16fe445abe4a20774ead1245]
+cloudflare_record.perf_tunnel_ingress["mithril-perf-portal.takamul.cc"]: Refreshing state... [id=8882a4ebed40ba56b4f52e7e4fcb6b2e]
+cloudflare_zero_trust_tunnel_route.vnet[0]: Refreshing state... [id=10.128.0.0/20]
+cloudflare_record.tunnel_ingress["mithril-qa-backend.takamul.cc"]: Refreshing state... [id=7f80ecab93ce3a10e93e31d1824c4178]
+cloudflare_record.tunnel_ingress["kafka-ui.takamul.cc"]: Refreshing state... [id=700d75b376137c56a5b69f28d3f8785f]
+cloudflare_record.tunnel_ingress["adminer.takamul.cc"]: Refreshing state... [id=507bb2163a9b9132485a0d4440054e45]
+cloudflare_record.tunnel_ingress["mithril-dev-portal.takamul.cc"]: Refreshing state... [id=35964b2e8b36631139425f894833ca7d]
+cloudflare_record.tunnel_ingress["vault.takamul.cc"]: Refreshing state... [id=99fec167eef51a28e56ee135afdf3e0f]
+cloudflare_record.tunnel_ingress["mithril-staging-portal.takamul.cc"]: Refreshing state... [id=fe02387662c91d0c1348c36344946284]
+cloudflare_record.tunnel_ingress["mithril-demo-backend.takamul.cc"]: Refreshing state... [id=bd343a5a3ae7c6cd0dd18b72821045ee]
+cloudflare_record.tunnel_ingress["mithril-dev-backend.takamul.cc"]: Refreshing state... [id=e40817486c626f7a1f062d2cc0e94d7b]
+cloudflare_record.tunnel_ingress["mithril-demo-portal.takamul.cc"]: Refreshing state... [id=0ae029f79bbf2350265ae5d0262cead2]
+cloudflare_record.tunnel_ingress["mithril-qa-portal.takamul.cc"]: Refreshing state... [id=11d4c34769ccc7826be01031ef492f16]
+cloudflare_record.tunnel_ingress["grafana.takamul.cc"]: Refreshing state... [id=049e4eebf9a1a2d9bcdc861a75a0b98b]
+cloudflare_record.tunnel_ingress["keycloak.takamul.cc"]: Refreshing state... [id=1748fd9f9d784e2a967ddd4f710365f1]
+cloudflare_record.tunnel_ingress["mithril-staging-backend.takamul.cc"]: Refreshing state... [id=fb664d8f41578a770c01e342866d3a64]
+cloudflare_record.tunnel_ingress["okd-console.takamul.cc"]: Refreshing state... [id=dc50b4c5f712e4c4724c1e85d9ace9c2]
+cloudflare_zero_trust_tunnel_cloudflared_config.this: Refreshing state... [id=9ca7823f-2ea9-404c-bec7-8eea63a51098]
+cloudflare_zero_trust_tunnel_cloudflared_config.jisr: Refreshing state... [id=36566ad8-5ae4-48a7-8c42-6ffe7531088b]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-pbcdci.takamul.cc"]: Refreshing state... [id=c461e24238e897825a68c2b816a86475]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-cbuae.takamul.cc"]: Refreshing state... [id=2b39b22c8b2ffb8e28130661eb2ec1f6]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-hsbc.takamul.cc"]: Refreshing state... [id=cc4ea627131f7570e7b7ef6513a8fd24]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-bot.takamul.cc"]: Refreshing state... [id=cd93a5313a308e5723802b2fdd296ef1]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-fab.takamul.cc"]: Refreshing state... [id=73bfc6e07f016e3a0c39fb15018be82c]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-hkma.takamul.cc"]: Refreshing state... [id=645e0730af45f4ef8824c91bc1d43d91]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-bbl.takamul.cc"]: Refreshing state... [id=df8ac93c44b6e14239020d932729a252]
+cloudflare_record.jisr_tunnel_ingress["jisr-demo-icbc.takamul.cc"]: Refreshing state... [id=29564a6fcb17ec4604d91326686e17e9]
+cloudflare_zero_trust_tunnel_route.cicd_vnet: Refreshing state... [id=10.129.0.0/20]
+cloudflare_zero_trust_tunnel_cloudflared_config.cicd: Refreshing state... [id=05426956-a683-4c1e-b9c6-0eadb23cf91f]
+cloudflare_record.cicd_tunnel_ingress["jenkins.takamul.cc"]: Refreshing state... [id=964591c340c946514b9a3305e2533e19]
+cloudflare_zero_trust_tunnel_route.silmarils_vnet: Refreshing state... [id=10.90.0.0/16]
+cloudflare_zero_trust_tunnel_cloudflared_config.silmarils: Refreshing state... [id=3562f5bf-95b4-445d-980b-9c92da517c4c]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-grafana.takamul.cc"]: Refreshing state... [id=754a1be702b7f27dc6832e40bb6bb268]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-adminer.takamul.cc"]: Refreshing state... [id=1dfba861884f98d409d9f4918fc379a4]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-keycloak.takamul.cc"]: Refreshing state... [id=98b11198922cbefe080ec77eee3729e2]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-qa-gateway.takamul.cc"]: Refreshing state... [id=b5cdcc5973a08e43a1b1243d8eb97d7e]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-qa-gateway-ui.takamul.cc"]: Refreshing state... [id=262c63dc69dc85f5887560548ddde798]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-qa-controller-ui.takamul.cc"]: Refreshing state... [id=e84ca5237c9c9a7b1b612a99fefcb739]
+cloudflare_record.silmarils_tunnel_ingress["silmarils-qa-controller.takamul.cc"]: Refreshing state... [id=bfba590299c2bbd16238c854e1b3e2ac]
+cloudflare_zero_trust_access_policy.cicd_service_token: Refreshing state... [id=c015aa3c-977e-4288-80e7-71285d710868]
+cloudflare_zero_trust_access_policy.silmarils_keycloak_bypass[0]: Refreshing state... [id=a8182cfa-ec60-4e54-89fb-b94eb733f07b]
+cloudflare_zero_trust_access_policy.perf_backend_bypass[0]: Refreshing state... [id=bdda69ac-00ea-479b-bce3-7fbbd8932524]
+cloudflare_zero_trust_access_policy.perf_keycloak_bypass[0]: Refreshing state... [id=2cf941d8-9867-4cd9-bdc2-9e37c726d18c]
+cloudflare_zero_trust_access_policy.perf_portal_bypass[0]: Refreshing state... [id=57829647-d09d-417f-8c52-12cab3ec2d60]
+cloudflare_zero_trust_access_policy.cicd["jenkins.takamul.cc"]: Refreshing state... [id=cbc2b0b1-57ed-42a0-a177-c46201c0cbae]
+cloudflare_zero_trust_access_policy.this["vault.takamul.cc"]: Refreshing state... [id=0f448227-23c8-4ee2-a049-a88b85d2380d]
+cloudflare_zero_trust_access_policy.this["mithril-demo-portal.takamul.cc"]: Refreshing state... [id=d2b0b86f-cb4e-474a-9d54-b352a8f271b7]
+cloudflare_zero_trust_access_policy.this["adminer.takamul.cc"]: Refreshing state... [id=fc39453a-667b-415f-af80-4a93fbaeec25]
+cloudflare_zero_trust_access_policy.this["mithril-dev-backend.takamul.cc"]: Refreshing state... [id=f0cdc695-0b59-4858-9647-663da6e3c8b3]
+cloudflare_zero_trust_access_policy.this["mithril-staging-backend.takamul.cc"]: Refreshing state... [id=6ca4e7d6-fbc7-4fb2-8ba8-7510232516e9]
+cloudflare_zero_trust_access_policy.this["mithril-staging-portal.takamul.cc"]: Refreshing state... [id=ea961f2b-de22-440b-87df-1f580db84da0]
+cloudflare_zero_trust_access_policy.this["mithril-dev-portal.takamul.cc"]: Refreshing state... [id=7f7a671c-772a-4d66-b68f-07be3058dc5c]
+cloudflare_zero_trust_access_policy.this["mithril-demo-backend.takamul.cc"]: Refreshing state... [id=14ecd16b-11ef-4a6d-ae49-41789c53ad50]
+cloudflare_zero_trust_access_policy.this["grafana.takamul.cc"]: Refreshing state... [id=9f03654a-2ad4-4f4c-8d43-a86aa4a00f98]
+cloudflare_zero_trust_access_policy.this["mithril-qa-portal.takamul.cc"]: Refreshing state... [id=72c0b202-bd2d-4081-b8cd-c575dfe573a6]
+cloudflare_zero_trust_access_policy.this["okd-console.takamul.cc"]: Refreshing state... [id=f09e27d9-7e54-44d5-a35b-e116e9bdf3d5]
+cloudflare_zero_trust_access_policy.this["keycloak.takamul.cc"]: Refreshing state... [id=e77b07a1-7265-4671-a788-a006561dcb18]
+cloudflare_zero_trust_access_policy.this["kafka-ui.takamul.cc"]: Refreshing state... [id=17888bdd-ea86-437d-a24b-2aacedf4ede1]
+cloudflare_zero_trust_access_policy.this["mithril-qa-backend.takamul.cc"]: Refreshing state... [id=50c0c558-d843-45db-88b9-ef3c4d68bb6b]
+cloudflare_zero_trust_access_policy.silmarils["silmarils-grafana.takamul.cc"]: Refreshing state... [id=1745aa38-c8eb-428f-a8e8-a9febbf47ea1]
+cloudflare_zero_trust_access_policy.silmarils["silmarils-qa-gateway-ui.takamul.cc"]: Refreshing state... [id=4128594e-4271-4e24-9507-1c2002d1a52e]
+cloudflare_zero_trust_access_policy.silmarils["silmarils-adminer.takamul.cc"]: Refreshing state... [id=f251a4bc-6b06-436e-977f-998958c1097f]
+cloudflare_zero_trust_access_policy.silmarils["silmarils-qa-controller-ui.takamul.cc"]: Refreshing state... [id=89808884-f114-4db6-9e86-314d0fb564d8]
+cloudflare_zero_trust_access_policy.silmarils["silmarils-qa-controller.takamul.cc"]: Refreshing state... [id=fa41bd40-93e1-42c6-a797-884965483002]
+cloudflare_zero_trust_access_policy.silmarils["silmarils-qa-gateway.takamul.cc"]: Refreshing state... [id=effffe44-32ad-46f6-9f3c-0aed1dad2375]
+cloudflare_zero_trust_access_policy.perf["perf-keycloak.takamul.cc"]: Refreshing state... [id=4710a5ba-3d97-4899-9fda-05ba50e80f18]
+cloudflare_zero_trust_access_policy.perf["perf-okd-console.takamul.cc"]: Refreshing state... [id=b4b8c046-73a3-4991-bc47-f6365de9b54b]
+cloudflare_zero_trust_access_policy.perf["mithril-perf-backend.takamul.cc"]: Refreshing state... [id=177146cd-8417-4d2b-af81-5bcad5b0124b]
+cloudflare_zero_trust_access_policy.perf["mithril-perf-portal.takamul.cc"]: Refreshing state... [id=acb28e17-ed53-4218-9748-d689c065248e]
+cloudflare_zero_trust_access_policy.perf["perf-grafana.takamul.cc"]: Refreshing state... [id=26e770d0-8f26-4ea7-b9e4-47626a3e0fe3]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-bbl.takamul.cc"]: Refreshing state... [id=48e28da5-7c96-41f4-a4fe-0a1e1a36c6bd]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-bot.takamul.cc"]: Refreshing state... [id=7f368e58-b34e-44e9-bce8-ac6ce880f50c]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-fab.takamul.cc"]: Refreshing state... [id=ca3a196b-523e-4cd6-9c87-7d0d39a6882e]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-hsbc.takamul.cc"]: Refreshing state... [id=6f0e0624-90f1-4430-83f8-fe619948c016]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-cbuae.takamul.cc"]: Refreshing state... [id=ec97bf3d-d347-45a6-88a8-2a71da3ec36d]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-icbc.takamul.cc"]: Refreshing state... [id=1590e268-6c89-47a8-b113-5892fd672231]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-pbcdci.takamul.cc"]: Refreshing state... [id=89bfcd6a-b845-496b-b2fa-720cca061deb]
+cloudflare_zero_trust_access_policy.jisr["jisr-demo-hkma.takamul.cc"]: Refreshing state... [id=ffbabfcd-64c5-458e-bcdf-307b1bc89ef9]
+
+Terraform used the selected providers to generate the following execution
+plan. Resource actions are indicated with the following symbols:
+  + create
+  ~ update in-place
+
+Terraform will perform the following actions:
+
+  # cloudflare_record.cicd_tunnel_ingress["sonarqube.takamul.cc"] will be created
+  + resource "cloudflare_record" "cicd_tunnel_ingress" {
+      + allow_overwrite = false
+      + content         = "05426956-a683-4c1e-b9c6-0eadb23cf91f.cfargotunnel.com"
+      + created_on      = (known after apply)
+      + hostname        = (known after apply)
+      + id              = (known after apply)
+      + metadata        = (known after apply)
+      + modified_on     = (known after apply)
+      + name            = "sonarqube.takamul.cc"
+      + proxiable       = (known after apply)
+      + proxied         = true
+      + ttl             = 1
+      + type            = "CNAME"
+      + value           = (known after apply)
+      + zone_id         = "fa81bb8ff0f869b10bdd665b4a3ccc35"
+    }
+
+  # cloudflare_record.tunnel_ingress["mithril-demo-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_record" "tunnel_ingress" {
+      + allow_overwrite = false
+      + content         = "9ca7823f-2ea9-404c-bec7-8eea63a51098.cfargotunnel.com"
+      + created_on      = (known after apply)
+      + hostname        = (known after apply)
+      + id              = (known after apply)
+      + metadata        = (known after apply)
+      + modified_on     = (known after apply)
+      + name            = "mithril-demo-lfi-reference.takamul.cc"
+      + proxiable       = (known after apply)
+      + proxied         = true
+      + ttl             = 1
+      + type            = "CNAME"
+      + value           = (known after apply)
+      + zone_id         = "fa81bb8ff0f869b10bdd665b4a3ccc35"
+    }
+
+  # cloudflare_record.tunnel_ingress["mithril-dev-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_record" "tunnel_ingress" {
+      + allow_overwrite = false
+      + content         = "9ca7823f-2ea9-404c-bec7-8eea63a51098.cfargotunnel.com"
+      + created_on      = (known after apply)
+      + hostname        = (known after apply)
+      + id              = (known after apply)
+      + metadata        = (known after apply)
+      + modified_on     = (known after apply)
+      + name            = "mithril-dev-lfi-reference.takamul.cc"
+      + proxiable       = (known after apply)
+      + proxied         = true
+      + ttl             = 1
+      + type            = "CNAME"
+      + value           = (known after apply)
+      + zone_id         = "fa81bb8ff0f869b10bdd665b4a3ccc35"
+    }
+
+  # cloudflare_record.tunnel_ingress["mithril-qa-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_record" "tunnel_ingress" {
+      + allow_overwrite = false
+      + content         = "9ca7823f-2ea9-404c-bec7-8eea63a51098.cfargotunnel.com"
+      + created_on      = (known after apply)
+      + hostname        = (known after apply)
+      + id              = (known after apply)
+      + metadata        = (known after apply)
+      + modified_on     = (known after apply)
+      + name            = "mithril-qa-lfi-reference.takamul.cc"
+      + proxiable       = (known after apply)
+      + proxied         = true
+      + ttl             = 1
+      + type            = "CNAME"
+      + value           = (known after apply)
+      + zone_id         = "fa81bb8ff0f869b10bdd665b4a3ccc35"
+    }
+
+  # cloudflare_zero_trust_access_application.cicd["sonarqube.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_application" "cicd" {
+      + account_id                   = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + allowed_idps                 = [
+          + "74c45b41-408f-4c83-ae73-2a3553f3eb5c",
+          + "772a08a9-6533-4334-a078-bac63746b37f",
+        ]
+      + app_launcher_visible         = true
+      + aud                          = (known after apply)
+      + auto_redirect_to_identity    = false
+      + domain                       = "sonarqube.takamul.cc"
+      + domain_type                  = (known after apply)
+      + enable_binding_cookie        = false
+      + id                           = (known after apply)
+      + name                         = "eng-infra-cicd-sonarqube"
+      + options_preflight_bypass     = false
+      + service_auth_401_redirect    = false
+      + session_duration             = "24h"
+      + skip_app_launcher_login_page = false
+      + skip_interstitial            = false
+      + type                         = "self_hosted"
+      + zone_id                      = (known after apply)
+    }
+
+  # cloudflare_zero_trust_access_application.this["keycloak.takamul.cc"] will be updated in-place
+  ~ resource "cloudflare_zero_trust_access_application" "this" {
+        id                           = "b17838f6-6fc1-4d81-8729-b3bd6e930c6b"
+        name                         = "eng-infra-azure-keycloak"
+      ~ options_preflight_bypass     = true -> false
+        tags                         = []
+        # (23 unchanged attributes hidden)
+    }
+
+  # cloudflare_zero_trust_access_application.this["mithril-demo-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_application" "this" {
+      + account_id                   = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + allowed_idps                 = [
+          + "74c45b41-408f-4c83-ae73-2a3553f3eb5c",
+          + "772a08a9-6533-4334-a078-bac63746b37f",
+        ]
+      + app_launcher_visible         = true
+      + aud                          = (known after apply)
+      + auto_redirect_to_identity    = false
+      + domain                       = "mithril-demo-lfi-reference.takamul.cc"
+      + domain_type                  = (known after apply)
+      + enable_binding_cookie        = false
+      + id                           = (known after apply)
+      + name                         = "eng-infra-azure-mithril-demo-lfi-reference"
+      + options_preflight_bypass     = false
+      + service_auth_401_redirect    = false
+      + session_duration             = "24h"
+      + skip_app_launcher_login_page = false
+      + skip_interstitial            = false
+      + type                         = "self_hosted"
+      + zone_id                      = (known after apply)
+    }
+
+  # cloudflare_zero_trust_access_application.this["mithril-dev-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_application" "this" {
+      + account_id                   = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + allowed_idps                 = [
+          + "74c45b41-408f-4c83-ae73-2a3553f3eb5c",
+          + "772a08a9-6533-4334-a078-bac63746b37f",
+        ]
+      + app_launcher_visible         = true
+      + aud                          = (known after apply)
+      + auto_redirect_to_identity    = false
+      + domain                       = "mithril-dev-lfi-reference.takamul.cc"
+      + domain_type                  = (known after apply)
+      + enable_binding_cookie        = false
+      + id                           = (known after apply)
+      + name                         = "eng-infra-azure-mithril-dev-lfi-reference"
+      + options_preflight_bypass     = false
+      + service_auth_401_redirect    = false
+      + session_duration             = "24h"
+      + skip_app_launcher_login_page = false
+      + skip_interstitial            = false
+      + type                         = "self_hosted"
+      + zone_id                      = (known after apply)
+    }
+
+  # cloudflare_zero_trust_access_application.this["mithril-qa-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_application" "this" {
+      + account_id                   = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + allowed_idps                 = [
+          + "74c45b41-408f-4c83-ae73-2a3553f3eb5c",
+          + "772a08a9-6533-4334-a078-bac63746b37f",
+        ]
+      + app_launcher_visible         = true
+      + aud                          = (known after apply)
+      + auto_redirect_to_identity    = false
+      + domain                       = "mithril-qa-lfi-reference.takamul.cc"
+      + domain_type                  = (known after apply)
+      + enable_binding_cookie        = false
+      + id                           = (known after apply)
+      + name                         = "eng-infra-azure-mithril-qa-lfi-reference"
+      + options_preflight_bypass     = false
+      + service_auth_401_redirect    = false
+      + session_duration             = "24h"
+      + skip_app_launcher_login_page = false
+      + skip_interstitial            = false
+      + type                         = "self_hosted"
+      + zone_id                      = (known after apply)
+    }
+
+  # cloudflare_zero_trust_access_policy.cicd["sonarqube.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_policy" "cicd" {
+      + account_id     = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + application_id = (known after apply)
+      + decision       = "allow"
+      + id             = (known after apply)
+      + name           = "Allow @takamul.ai users"
+      + precedence     = 1
+
+      + include {
+          + email_domain = [
+              + "takamul.ai",
+            ]
+        }
+
+      + require {
+          + device_posture = [
+              + "57d985c1-011f-434a-aac3-ec6fcb58fe75",
+            ]
+        }
+    }
+
+  # cloudflare_zero_trust_access_policy.perf_backend_bypass[0] will be updated in-place
+  ~ resource "cloudflare_zero_trust_access_policy" "perf_backend_bypass" {
+        id                             = "bdda69ac-00ea-479b-bce3-7fbbd8932524"
+        name                           = "Bypass for Perf Backend API"
+      ~ precedence                     = 2 -> 0
+        # (7 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # cloudflare_zero_trust_access_policy.perf_keycloak_bypass[0] will be updated in-place
+  ~ resource "cloudflare_zero_trust_access_policy" "perf_keycloak_bypass" {
+        id                             = "2cf941d8-9867-4cd9-bdc2-9e37c726d18c"
+        name                           = "Bypass for Perf Keycloak OIDC endpoints"
+      ~ precedence                     = 2 -> 0
+        # (7 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # cloudflare_zero_trust_access_policy.perf_portal_bypass[0] will be updated in-place
+  ~ resource "cloudflare_zero_trust_access_policy" "perf_portal_bypass" {
+        id                             = "57829647-d09d-417f-8c52-12cab3ec2d60"
+        name                           = "Bypass for Perf Portal"
+      ~ precedence                     = 2 -> 0
+        # (7 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # cloudflare_zero_trust_access_policy.silmarils_keycloak_bypass[0] will be updated in-place
+  ~ resource "cloudflare_zero_trust_access_policy" "silmarils_keycloak_bypass" {
+        id                             = "a8182cfa-ec60-4e54-89fb-b94eb733f07b"
+        name                           = "Bypass for Keycloak OIDC endpoints"
+      ~ precedence                     = 1 -> 0
+        # (7 unchanged attributes hidden)
+
+        # (1 unchanged block hidden)
+    }
+
+  # cloudflare_zero_trust_access_policy.this["mithril-demo-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_policy" "this" {
+      + account_id     = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + application_id = (known after apply)
+      + decision       = "allow"
+      + id             = (known after apply)
+      + name           = "Allow @takamul.ai users"
+      + precedence     = 1
+
+      + include {
+          + email_domain = [
+              + "takamul.ai",
+            ]
+        }
+
+      + require {
+          + device_posture = [
+              + "57d985c1-011f-434a-aac3-ec6fcb58fe75",
+            ]
+        }
+    }
+
+  # cloudflare_zero_trust_access_policy.this["mithril-dev-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_policy" "this" {
+      + account_id     = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + application_id = (known after apply)
+      + decision       = "allow"
+      + id             = (known after apply)
+      + name           = "Allow @takamul.ai users"
+      + precedence     = 1
+
+      + include {
+          + email_domain = [
+              + "takamul.ai",
+            ]
+        }
+
+      + require {
+          + device_posture = [
+              + "57d985c1-011f-434a-aac3-ec6fcb58fe75",
+            ]
+        }
+    }
+
+  # cloudflare_zero_trust_access_policy.this["mithril-qa-lfi-reference.takamul.cc"] will be created
+  + resource "cloudflare_zero_trust_access_policy" "this" {
+      + account_id     = "caa0be9e0dfcbcdf5ed20be838963bb8"
+      + application_id = (known after apply)
+      + decision       = "allow"
+      + id             = (known after apply)
+      + name           = "Allow @takamul.ai users"
+      + precedence     = 1
+
+      + include {
+          + email_domain = [
+              + "takamul.ai",
+            ]
+        }
+
+      + require {
+          + device_posture = [
+              + "57d985c1-011f-434a-aac3-ec6fcb58fe75",
+            ]
+        }
+    }
+
+  # cloudflare_zero_trust_device_posture_rule.warp_client[0] will be updated in-place
+  ~ resource "cloudflare_zero_trust_device_posture_rule" "warp_client" {
+      + description = "Require WARP client to be running and connected"
+        id          = "57d985c1-011f-434a-aac3-ec6fcb58fe75"
+        name        = "WARP Client Required"
+        # (4 unchanged attributes hidden)
+
+      + match {
+          + platform = "mac"
+        }
+      + match {
+          + platform = "windows"
+        }
+      + match {
+          + platform = "linux"
+        }
+
+        # (1 unchanged block hidden)
+    }
+
+  # cloudflare_zero_trust_tunnel_cloudflared_config.cicd will be updated in-place
+  ~ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "cicd" {
+        id         = "05426956-a683-4c1e-b9c6-0eadb23cf91f"
+        # (2 unchanged attributes hidden)
+
+      ~ config {
+          ~ ingress_rule {
+              + hostname = "sonarqube.takamul.cc"
+              ~ service  = "http_status:404" -> "http://sonarqube-sonarqube.cicd.svc:9000"
+                # (1 unchanged attribute hidden)
+
+              + origin_request {
+                  + connect_timeout          = "30s"
+                  + disable_chunked_encoding = false
+                  + http2_origin             = false
+                  + keep_alive_connections   = 100
+                  + keep_alive_timeout       = "1m30s"
+                  + no_happy_eyeballs        = false
+                  + no_tls_verify            = true
+                  + proxy_address            = "127.0.0.1"
+                  + proxy_port               = 0
+                  + tcp_keep_alive           = "30s"
+                  + tls_timeout              = "10s"
+                }
+            }
+          + ingress_rule {
+              + service = "http_status:404"
+            }
+
+            # (2 unchanged blocks hidden)
+        }
+    }
+
+  # cloudflare_zero_trust_tunnel_cloudflared_config.this will be updated in-place
+  ~ resource "cloudflare_zero_trust_tunnel_cloudflared_config" "this" {
+        id         = "9ca7823f-2ea9-404c-bec7-8eea63a51098"
+        # (2 unchanged attributes hidden)
+
+      ~ config {
+          ~ ingress_rule {
+                # (3 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-keycloak.apps.okd.takamul.cc" -> "keycloak.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+                # (3 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-dev-backend.apps.okd.takamul.cc" -> "backend-dev.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+                # (3 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-dev-portal.apps.okd.takamul.cc" -> "portal-dev.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              ~ hostname = "mithril-qa-backend.takamul.cc" -> "mithril-dev-lfi-reference.takamul.cc"
+                # (2 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-qa-backend.apps.okd.takamul.cc" -> "lfi-reference-dev.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              ~ hostname = "mithril-qa-portal.takamul.cc" -> "mithril-qa-backend.takamul.cc"
+                # (2 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-qa-portal.apps.okd.takamul.cc" -> "backend-qa.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              ~ hostname = "mithril-demo-backend.takamul.cc" -> "mithril-qa-portal.takamul.cc"
+                # (2 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-demo-backend.apps.okd.takamul.cc" -> "portal-qa.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              ~ hostname = "mithril-demo-portal.takamul.cc" -> "mithril-qa-lfi-reference.takamul.cc"
+                # (2 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-demo-portal.apps.okd.takamul.cc" -> "lfi-reference-qa.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              ~ hostname = "mithril-staging-backend.takamul.cc" -> "mithril-demo-backend.takamul.cc"
+                # (2 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-staging-backend.apps.okd.takamul.cc" -> "backend-demo.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              ~ hostname = "mithril-staging-portal.takamul.cc" -> "mithril-demo-portal.takamul.cc"
+                # (2 unchanged attributes hidden)
+
+              ~ origin_request {
+                  ~ http_host_header         = "apisix-staging-portal.apps.okd.takamul.cc" -> "portal-demo.apps.okd.takamul.cc"
+                    # (15 unchanged attributes hidden)
+                }
+            }
+          ~ ingress_rule {
+              + hostname = "mithril-demo-lfi-reference.takamul.cc"
+              ~ service  = "http_status:404" -> "https://router-internal-default.openshift-ingress.svc.cluster.local:443"
+                # (1 unchanged attribute hidden)
+
+              + origin_request {
+                  + connect_timeout          = "30s"
+                  + disable_chunked_encoding = false
+                  + http2_origin             = false
+                  + http_host_header         = "lfi-reference-demo.apps.okd.takamul.cc"
+                  + keep_alive_connections   = 100
+                  + keep_alive_timeout       = "1m30s"
+                  + no_happy_eyeballs        = false
+                  + no_tls_verify            = true
+                  + proxy_address            = "127.0.0.1"
+                  + proxy_port               = 0
+                  + tcp_keep_alive           = "30s"
+                  + tls_timeout              = "10s"
+                }
+            }
+          + ingress_rule {
+              + hostname = "mithril-staging-backend.takamul.cc"
+              + service  = "https://router-internal-default.openshift-ingress.svc.cluster.local:443"
+
+              + origin_request {
+                  + connect_timeout          = "30s"
+                  + disable_chunked_encoding = false
+                  + http2_origin             = false
+                  + http_host_header         = "backend-staging.apps.okd.takamul.cc"
+                  + keep_alive_connections   = 100
+                  + keep_alive_timeout       = "1m30s"
+                  + no_happy_eyeballs        = false
+                  + no_tls_verify            = true
+                  + proxy_address            = "127.0.0.1"
+                  + proxy_port               = 0
+                  + tcp_keep_alive           = "30s"
+                  + tls_timeout              = "10s"
+                }
+            }
+          + ingress_rule {
+              + hostname = "mithril-staging-portal.takamul.cc"
+              + service  = "https://router-internal-default.openshift-ingress.svc.cluster.local:443"
+
+              + origin_request {
+                  + connect_timeout          = "30s"
+                  + disable_chunked_encoding = false
+                  + http2_origin             = false
+                  + http_host_header         = "portal-staging.apps.okd.takamul.cc"
+                  + keep_alive_connections   = 100
+                  + keep_alive_timeout       = "1m30s"
+                  + no_happy_eyeballs        = false
+                  + no_tls_verify            = true
+                  + proxy_address            = "127.0.0.1"
+                  + proxy_port               = 0
+                  + tcp_keep_alive           = "30s"
+                  + tls_timeout              = "10s"
+                }
+            }
+          + ingress_rule {
+              + service = "http_status:404"
+            }
+
+            # (6 unchanged blocks hidden)
+        }
+    }
+
+Plan: 12 to add, 8 to change, 0 to destroy.
+
+Changes to Outputs:
+  ~ ingress_hostnames                      = [
+        # (7 unchanged elements hidden)
+        "mithril-dev-portal.takamul.cc",
+      + "mithril-dev-lfi-reference.takamul.cc",
+        "mithril-qa-backend.takamul.cc",
+        "mithril-qa-portal.takamul.cc",
+      + "mithril-qa-lfi-reference.takamul.cc",
+        "mithril-demo-backend.takamul.cc",
+        "mithril-demo-portal.takamul.cc",
+      + "mithril-demo-lfi-reference.takamul.cc",
+        "mithril-staging-backend.takamul.cc",
+        # (1 unchanged element hidden)
+    ]
+
+─────────────────────────────────────────────────────────────────────────────
+
+Note: You didn't use the -out option to save this plan, so Terraform can't
+guarantee to take exactly these actions if you run "terraform apply" now.
