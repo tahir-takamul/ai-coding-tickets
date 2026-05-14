@@ -160,3 +160,59 @@ lowercase) — child job lookups are case-sensitive.
   uses internally; deviating from it is the way to silent breakage.
 
 ---
+
+## F05 — `environment { FOO = "${params.X}" }` + `set -u` = first-run abort
+
+**What.** Declarative pipelines that route params into shell via the
+top-level `environment {}` block:
+
+```groovy
+environment {
+    VERSION_TAG_INPUT = "${params.VERSION_TAG}"
+}
+```
+
+…look like they should reliably surface `VERSION_TAG_INPUT` as an
+exported env var inside `sh '…'` blocks. They don't. When
+`params.VERSION_TAG` is the empty default (declared
+`defaultValue: ''`), Jenkins sometimes does not export the env var at
+all on the first parameterised run — the var is **unset** in the
+shell, not empty. Combined with `set -u`, the next reference aborts:
+
+```
+script.sh.copy: line 17: VERSION_TAG_INPUT: unbound variable
+```
+
+Observed on the bootstrap-orchestrator's `Resolve Version` stage,
+first-run after the job was newly parameterised.
+
+**Why it matters.** Every shell-level fetch of a Jenkins param value
+is suspect. The bug is silent until `set -u` (which all our shells
+use, for fail-fast) trips on the unbound reference.
+
+**How we handle it.** Defensive coercion at the top of the shell:
+
+```sh
+set -eu
+VERSION_TAG_INPUT="${VERSION_TAG_INPUT:-}"
+# safe to reference ${VERSION_TAG_INPUT} from here on
+```
+
+`${FOO:-}` expands to empty if `FOO` is unset *or* empty — robust
+against both the missing-export case and the genuine-empty case.
+
+Alternative: wrap the `sh` call in `withEnv(["FOO=${params.X ?: ''}"])`
+inside a `script {}` block — guarantees the var is exported. More
+verbose; same outcome. Use this if you need a non-empty default.
+
+**Do NOT.**
+- Do NOT trust `environment { FOO = "${params.X}" }` alone when the
+  shell uses `set -u`. Always defensively default at the top of the
+  `sh '…'` body.
+- Do NOT remove `set -eu` from existing shells to "fix" this — `-eu`
+  is the only thing that surfaces typos and unbound refs in pipeline
+  shells; lose it and you'll silently build the wrong artefact.
+- Do NOT change `set -eu` to `set -e`; you lose the unbound-var
+  guard but keep error-exit, which makes the next bug harder to find.
+
+---
