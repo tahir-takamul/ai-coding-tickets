@@ -18,7 +18,7 @@
 | Layer | Status | Notes |
 |---|---|---|
 | `mobile-v2/` directory | created | `modules/`, `orchestrators/` |
-| `mobile-v2/modules/sync-github-to-bitbucket.Jenkinsfile` | done (T01) | Pushes GitHub `staging` → Bitbucket `staging` + latest 30 staging-reachable tags (tweak `TAG_LIMIT` to change). Bitbucket default (`main`) untouched. |
+| `mobile-v2/modules/sync-github-to-bitbucket.Jenkinsfile` | done (T01) | Pushes GitHub `staging` → Bitbucket `staging` + latest 20 staging-reachable tags (tweak `TAG_LIMIT` to change). Bitbucket default (`main`) untouched. |
 | `mobile-v2/modules/security-scan.Jenkinsfile` | stub (T02) | Echoes TODO; orchestrator wired to call it. Port from legacy is T02. |
 | `mobile-v2/modules/android-build.Jenkinsfile` | stub (T03) | Echoes TODO; orchestrator wired. Port is T03. |
 | `mobile-v2/modules/ios-build.Jenkinsfile` | stub (T04) | Echoes TODO; orchestrator wired. Blocked on macOS hardware. |
@@ -74,6 +74,6 @@ Next: pick up T02 (security-scan port) when user is ready.
   namespace bug) — every tag falsely marked "skipped", nothing
   pushed. Fixed by snapshotting Bitbucket's tag set via
   `git ls-remote --tags --refs` and comparing against that.
-- `2026-05-14` — Sync now mirrors only the latest 30 staging-reachable
+- `2026-05-14` — Sync now mirrors only the latest 20 staging-reachable
   tags (by creation date) instead of all ~2k. `TAG_LIMIT` in the
   Sync stage is the knob.

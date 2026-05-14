@@ -67,7 +67,7 @@ identical to GitHub.
 | First env | bootstrap (legacy called this SIT) |
 | First step | GitHub→Bitbucket sync |
 | Sync source / target | GitHub `staging` → Bitbucket `staging` (created on first run; Bitbucket default `main` untouched) |
-| Tags | Latest 30 tags reachable from `staging` (by creation date) — older tags are historical |
+| Tags | Latest 20 tags reachable from `staging` (by creation date) — older tags are historical |
 | Sync style | Force-with-lease branch push + tag-by-tag push of staging-reachable tags |
 | Version selection | `VERSION_TAG` param; empty → check out HEAD of Bitbucket `staging` (no tag lookup) |
 | Sync location | Standalone module job, orchestrator calls via `build job:` |
