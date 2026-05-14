@@ -24,9 +24,9 @@
 | `mobile2/modules/ios-build.Jenkinsfile` | stub (T04) | Echoes TODO; orchestrator wired. Blocked on macOS hardware. |
 | `mobile2/modules/artifact-upload.Jenkinsfile` | stub (T05) | Echoes TODO; orchestrator wired. Port is T05. |
 | `mobile2/modules/mdm-distribute.Jenkinsfile` | partial (T06) | Real Nexus download (curl + `Nexus-cred`); MDM upload is still echo, blocked on MDM platform. |
-| `mobile2/orchestrators/sit-orchestrator.Jenkinsfile` | wired end-to-end | Init → Sync → Resolve Version → Security Scans (parallel) → Build Android → Build iOS → Upload Nexus → Distribute to MDM. Fail-safe mode throughout. |
+| `mobile2/orchestrators/bootstrap-orchestrator.Jenkinsfile` | wired end-to-end | Init → Sync → Resolve Version → Security Scans (parallel) → Build Android → Build iOS → Upload Nexus → Distribute to MDM. Fail-safe mode throughout. |
 | Jenkins job wiring | not started | Need new folder `Retail-CBDC/00-Mobile/` with `Modules/` + `Orchestrators/` subfolders containing one job each. |
-| UAT / PREPROD / PROD orchestrators | not started | After SIT chain is complete |
+| UAT / PREPROD / PROD orchestrators | not started | After bootstrap chain is complete |
 
 ## In-flight task
 
@@ -47,8 +47,9 @@ Next: pick up T02 (security-scan port) when user is ready.
 ## Recent changes
 
 - `2026-05-14` — T01: created `mobile2/` skeleton, sync module
-  (with tags), SIT orchestrator with Init + Sync + Resolve Version.
-- `2026-05-14` — Wired full SIT orchestrator flow: stubs for
+  (with tags), bootstrap-orchestrator (then named "SIT") with Init +
+  Sync + Resolve Version.
+- `2026-05-14` — Wired full bootstrap-orchestrator flow: stubs for
   security-scan / android-build / ios-build / artifact-upload, echo
   placeholder for mdm-distribute, T02-T06 task specs landed,
   FINDING.md F01-F04 documented.
@@ -59,3 +60,9 @@ Next: pick up T02 (security-scan port) when user is ready.
 - `2026-05-14` — `mdm-distribute` upgraded from pure-echo to real
   Nexus download (curl + `Nexus-cred`) + echo MDM upload. T06.md
   status flipped to `partial`.
+- `2026-05-14` — Renamed orchestrator file
+  `sit-orchestrator.Jenkinsfile` → `bootstrap-orchestrator.Jenkinsfile`
+  (legacy mobile/ called this "SIT" but it builds the bootstrap
+  variant — clearer name). All mobile2 internal references swept;
+  legacy `mobile/orchestrators/sit-orchestrator.Jenkinsfile` paths
+  retained as legacy references.

@@ -11,8 +11,10 @@ Rebuild the on-prem mobile CI/CD pipeline under a **new** directory
 existing `mobile/` tree is left untouched — `mobile2/` is the green-field
 replacement.
 
-The new design starts from the **SIT orchestrator** and grows downward
-one step at a time. Each step lands as its own `Tnn.md`.
+The new design starts from the **bootstrap-orchestrator** (the
+legacy mobile/ pipeline called this "SIT" but it built the
+bootstrap-flavour APK — mobile2 renames it for clarity) and grows
+downward one step at a time. Each step lands as its own `Tnn.md`.
 
 ## Scope split
 
@@ -28,9 +30,9 @@ at `mobile/` keep working unchanged.
 ## Architecture (orchestrator chain)
 
 ```
-SIT  ─▶ (build job:) sync-github-to-bitbucket
-     ─▶ (build job:) … next steps to be defined
-UAT  ─▶ (later)
+Bootstrap ─▶ (build job:) sync-github-to-bitbucket
+          ─▶ (build job:) … all wired stages
+UAT       ─▶ (later)
 PREP ─▶ (later)
 PROD ─▶ (later)
 ```
@@ -62,12 +64,12 @@ identical to GitHub.
 | Area | Choice |
 |---|---|
 | New tree location | `iac/cicd-onprem/pipelines/mobile2/` (greenfield, parallel to `mobile/`) |
-| First env | SIT |
+| First env | bootstrap (legacy called this SIT) |
 | First step | GitHub→Bitbucket sync |
 | Sync source / target | GitHub `staging` → Bitbucket `staging` (created on first run; Bitbucket default `main` untouched) |
 | Tags | All tags reachable from `staging` (filtered fetch, not full mirror) |
 | Sync style | Force-with-lease branch push + tag-by-tag push of staging-reachable tags |
-| SIT version selection | `VERSION_TAG` param; empty → check out HEAD of Bitbucket `staging` (no tag lookup) |
+| Version selection | `VERSION_TAG` param; empty → check out HEAD of Bitbucket `staging` (no tag lookup) |
 | Sync location | Standalone module job, orchestrator calls via `build job:` |
 
 ## Critical anchor files (existing)
@@ -76,27 +78,27 @@ identical to GitHub.
   legacy sync used by `mobile/`. Shape to mirror, with two changes:
   (a) include staging-reachable tags, (b) module lives under `mobile2/`.
 - `iac/cicd-onprem/pipelines/mobile/orchestrators/sit-orchestrator.Jenkinsfile` —
-  shape reference for the new `mobile2` SIT orchestrator
+  shape reference for the new `mobile2` bootstrap-orchestrator
   (parameters, init stage, post block).
 
 ## Tasks
 
 | Task | Title | Status |
 |---|---|---|
-| `T01` | Bootstrap mobile2 + SIT sync step (Init → Sync → Resolve Version) | DONE |
+| `T01` | Initialise mobile2 + bootstrap-orchestrator sync step (Init → Sync → Resolve Version) | DONE |
 | `T02` | Port `security-scan` module + add `ENABLE_SECURITY_SCANS` toggle | pending |
 | `T03` | Port `android-build` module + wire `Build Android` stage | pending |
 | `T04` | Port `ios-build` placeholder + wire `Build iOS` stage | pending (blocked on macOS hardware) |
 | `T05` | Port `artifact-upload` module + wire `Upload Android Artifact` stage | pending |
 | `T06` | Create `mdm-distribute` module (Nexus → MDM, echo-only) + wire `Distribute to MDM` stage | pending (echo today; real impl blocked on MDM platform) |
 
-Note: the SIT orchestrator is **wired end-to-end now** with stub
+Note: the bootstrap-orchestrator is **wired end-to-end now** with stub
 modules in `mobile2/modules/`. Each `Tnn` task above turns one stub
 into the real ported / implemented module. The orchestrator itself does
 not need re-touching as those tasks land — only the corresponding
 module Jenkinsfile.
 
-## SIT orchestrator stage map (post-T01 + wiring pass)
+## Bootstrap orchestrator stage map (post-T01 + wiring pass)
 
 ```
 Init
@@ -112,7 +114,7 @@ Init
   └─ Distribute to MDM    (when ENABLE_MDM_DISTRIBUTE + UPLOAD SUCCESS) (T06)
 ```
 
-## SIT orchestrator parameters
+## Bootstrap orchestrator parameters
 
 | Name | Type | Default | Purpose |
 |---|---|---|---|
