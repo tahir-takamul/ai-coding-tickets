@@ -86,11 +86,11 @@ identical to GitHub.
 | Task | Title | Status |
 |---|---|---|
 | `T01` | Initialise mobile-v2 + bootstrap-orchestrator sync step (Init → Sync → Resolve Version) | DONE |
-| `T02` | Port `security-scan` module + add `ENABLE_SECURITY_SCANS` toggle | pending |
-| `T03` | Port `android-build` module + wire `Build Android` stage | pending |
+| `T02` | Port `security-scan` module + add `ENABLE_SECURITY_SCANS` toggle | DONE |
+| `T03` | Port `android-build` module + wire `Build Android` stage | DONE |
 | `T04` | Port `ios-build` placeholder + wire `Build iOS` stage | pending (blocked on macOS hardware) |
-| `T05` | Port `artifact-upload` module + wire `Upload Android Artifact` stage | pending |
-| `T06` | Create `mdm-distribute` module (Nexus → MDM, echo-only) + wire `Distribute to MDM` stage | pending (echo today; real impl blocked on MDM platform) |
+| `T05` | Port `artifact-upload` module + wire `Upload Android Artifact` stage | DONE |
+| `T06` | Create `mdm-distribute` module (Nexus → MDM, echo-only) + wire `Distribute to MDM` stage | partial (Nexus download is real; MDM upload echo, blocked on MDM platform) |
 
 Note: the bootstrap-orchestrator is **wired end-to-end now** with stub
 modules in `mobile-v2/modules/`. Each `Tnn` task above turns one stub

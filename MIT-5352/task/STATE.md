@@ -19,10 +19,10 @@
 |---|---|---|
 | `mobile-v2/` directory | created | `modules/`, `orchestrators/` |
 | `mobile-v2/modules/sync-github-to-bitbucket.Jenkinsfile` | done (T01) | Pushes GitHub `staging` → Bitbucket `staging` + latest 20 staging-reachable tags (tweak `TAG_LIMIT` to change). Bitbucket default (`main`) untouched. |
-| `mobile-v2/modules/security-scan.Jenkinsfile` | stub (T02) | Echoes TODO; orchestrator wired to call it. Port from legacy is T02. |
-| `mobile-v2/modules/android-build.Jenkinsfile` | stub (T03) | Echoes TODO; orchestrator wired. Port is T03. |
+| `mobile-v2/modules/security-scan.Jenkinsfile` | done (T02) | Full SonarQube + Checkmarx SAST/SCA port from legacy. `BRANCH=staging` / `ENVIRONMENT=bootstrap` defaults + optional `COMMIT_SHA` plumbed into the Sonar checkout. |
+| `mobile-v2/modules/android-build.Jenkinsfile` | done (T03) | Full APK-build port from legacy (assembleBootstrapRelease, signing creds, archive). `BUILD_TAG` now uses `RESOLVED_VERSION_LABEL` (orchestrator passes `RESOLVED_VERSION`), falls back to `BRANCH`. |
 | `mobile-v2/modules/ios-build.Jenkinsfile` | stub (T04) | Echoes TODO; orchestrator wired. Blocked on macOS hardware. |
-| `mobile-v2/modules/artifact-upload.Jenkinsfile` | stub (T05) | Echoes TODO; orchestrator wired. Port is T05. |
+| `mobile-v2/modules/artifact-upload.Jenkinsfile` | done (T05) | Full port from legacy (controller-disk archive read → curl PUT to Nexus). Now sets `env.NEXUS_ARTIFACT_URL = uploadPath` so the MDM stage can consume it via `result.buildVariables`. |
 | `mobile-v2/modules/mdm-distribute.Jenkinsfile` | partial (T06) | Real Nexus download (curl + `Nexus-cred`); MDM upload is still echo, blocked on MDM platform. |
 | `mobile-v2/orchestrators/bootstrap-orchestrator.Jenkinsfile` | wired end-to-end | Init → Sync → Resolve Version → Security Scans (parallel) → Build Android → Build iOS → Upload Nexus → Distribute to MDM. Fail-safe mode throughout. |
 | Jenkins job wiring | not started | Need new folder `Retail-CBDC/00-Mobile/` with `Modules/` + `Orchestrators/` subfolders containing one job each. |
@@ -30,8 +30,12 @@
 
 ## In-flight task
 
-None — T01 landed; orchestrator + stubs + task specs T02-T06 landed.
-Next: pick up T02 (security-scan port) when user is ready.
+None — every module that can land has landed: T01 sync, T02 scan,
+T03 android-build, T05 artifact-upload, T06 download-from-Nexus. T04
+ios-build stays a placeholder (macOS hardware), T06 MDM-upload half
+stays an echo (MDM platform). Next: Jenkins-side job creation under
+`Retail-CBDC/00-Mobile/{Modules,Orchestrators}/...` and a first
+end-to-end orchestrator run.
 
 ## Open questions / pending decisions
 
@@ -77,3 +81,10 @@ Next: pick up T02 (security-scan port) when user is ready.
 - `2026-05-14` — Sync now mirrors only the latest 20 staging-reachable
   tags (by creation date) instead of all ~2k. `TAG_LIMIT` in the
   Sync stage is the knob.
+- `2026-05-14` — Ported T02/T03/T05 in parallel: security-scan,
+  android-build, artifact-upload Jenkinsfiles in mobile-v2 are no
+  longer stubs — they carry the legacy logic verbatim plus the
+  mobile-v2 deltas (BRANCH/ENV defaults, `COMMIT_SHA` plumbing,
+  `RESOLVED_VERSION_LABEL` for BUILD_TAG, `NEXUS_ARTIFACT_URL`
+  surfaced via `env`). Only T04 (ios-build) remains a placeholder,
+  parked on macOS hardware. Status flips on T02/T03/T05.
