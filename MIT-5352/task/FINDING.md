@@ -22,7 +22,7 @@ legacy is to **read the archive directly off the Jenkins controller's
 local disk** (see [[F03]]) — which forces the upload job to run on the
 controller itself (see [[F02]]).
 
-**How we handle it.** Mobile-automated inherits the same constraint for now.
+**How we handle it.** Mobile-v2 inherits the same constraint for now.
 The orchestrator passes `SOURCE_JOB` (`result.fullProjectName`) +
 `SOURCE_BUILD_NUMBER` (`result.number`) from the build module to the
 upload module, which translates them into a controller-local archive
@@ -60,7 +60,7 @@ upload job needs `$JENKINS_HOME` filesystem access; only the controller
 has it. The build job needs the Android toolchain; only `cbdc_retail`
 has it. Splitting them is forced.
 
-**How we handle it.** Mobile-automated keeps the same split. The orchestrator
+**How we handle it.** Mobile-v2 keeps the same split. The orchestrator
 itself can stay on `cbdc_retail` (it already does because the sync +
 resolve-version stages need a Bitbucket workspace) and uses `build job:`
 to dispatch each module on its correct agent.
@@ -107,7 +107,7 @@ the APK from the build agent to Nexus:
   beyond the agent workspace. If a future module skips it, downstream
   upload has nothing to read.
 
-**How we handle it.** Mobile-automated keeps the same shape. The MDM-distribute
+**How we handle it.** Mobile-v2 keeps the same shape. The MDM-distribute
 module ([[T06]]) is the *second* consumer of the same artifact path —
 it must accept the same `SOURCE_JOB` + `SOURCE_BUILD_NUMBER` (or a
 Nexus URL, once the upload step has run) so it can locate the file.
@@ -138,15 +138,15 @@ def archiveDir = "${jenkinsHome}/${jobFsPath}/builds/${params.SOURCE_BUILD_NUMBE
 ```
 
 **Why it matters.** If the Jenkins folder layout changes (e.g.
-legacy `MobileApp` vs. mobile-automated's `00-Mobile/Modules`), the **only**
+legacy `MobileApp` vs. mobile-v2's `00-Mobile/Modules`), the **only**
 thing that needs to adapt is what the orchestrator passes — the upload
 module's translation logic is generic. As long as the orchestrator
 passes `result.fullProjectName` literally (and doesn't try to hardcode
 the project name), the move is free.
 
-**How we handle it.** Mobile-automated orchestrator continues to pass
+**How we handle it.** Mobile-v2 orchestrator continues to pass
 `result.fullProjectName` and `result.number` opaquely. The
-upload module re-uses the same translation. The current mobile-automated
+upload module re-uses the same translation. The current mobile-v2
 Jenkins-folder layout is `Retail-CBDC/00-Mobile/Modules/...` /
 `Retail-CBDC/00-Mobile/Orchestrators/...` — confirmed by the platform
 team. PascalCase matters: `Modules` and `Orchestrators` (not
