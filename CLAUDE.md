@@ -42,6 +42,7 @@ Example: `MIT-3467/task/SONAR.md`.
 5. **`REVERT.md`** lists everything created: TF resources, KV secrets, K8s objects, ACR images, GHA workflows, etc. Each row has the revert command. This is the safety net.
 6. **`logs/`** keeps apply outputs verbatim. Long but invaluable when debugging two months later. Don't trim them.
    - **Exception**: **never commit TF state dumps** (`terraform state pull > foo.json`) to this archive — Terraform state contains backend credentials (Azure Storage Account access keys, GCS/S3 creds, etc.) that GitHub secret-scanning correctly blocks. If a state snapshot is needed for forensics, store it in the cloud bucket itself (e.g. `${TF_BACKEND_BUCKET}/snapshots/...`) and link to it from REVERT.md, don't paste the JSON here.
+7. IMPORTANT: Keep on pushing the changes to main, however small the change of plan be. Its a personal local, private repo dedicated for the task
 
 ## Working across repos
 
