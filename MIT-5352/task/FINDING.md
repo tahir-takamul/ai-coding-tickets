@@ -216,3 +216,74 @@ verbose; same outcome. Use this if you need a non-empty default.
   guard but keep error-exit, which makes the next bug harder to find.
 
 ---
+
+## F06 — `git rev-parse refs/tags/X` ignores which remote a tag came from
+
+**What.** Git stores tags in a single, flat, **remote-agnostic**
+namespace at `refs/tags/<name>`. Unlike branches (`refs/remotes/<remote>/<name>`),
+tags don't get a per-remote prefix when you fetch them. So after:
+
+```sh
+git fetch github --tags
+git fetch bitbucket --tags
+```
+
+…the workspace has exactly one `refs/tags/v1.0.0.199`, and
+`git rev-parse refs/tags/v1.0.0.199` returns the SHA from **whichever
+remote pushed that tag in last**. You cannot tell from local state
+whether Bitbucket actually has the tag.
+
+This bit the mobile-v2 sync's idempotency check on the first real run:
+the loop was structured as
+
+```sh
+GH_TAG_SHA=$(git rev-parse "refs/tags/${tag}")
+BB_TAG_SHA=$(git rev-parse "refs/tags/${tag}" 2>/dev/null || echo "")
+if [ "${GH_TAG_SHA}" = "${BB_TAG_SHA}" ]; then ... skip ... fi
+```
+
+Both lookups returned the same local SHA, so every tag was "skipped"
+and **nothing pushed** — even though Bitbucket genuinely had zero tags.
+Symptom: `Tags skipped: 2060, Tags pushed: 0` and the Bitbucket Tags
+view stays empty.
+
+**Why it matters.** This is the only way to detect "already mirrored"
+without a network call per tag. Anyone tweaking the sync logic later
+will reflexively reach for the same `rev-parse`-then-compare pattern
+and reintroduce the bug.
+
+**How we handle it.** Snapshot Bitbucket's tag state via one
+`git ls-remote --tags --refs` call, write to a temp file, look up
+each tag with awk:
+
+```sh
+BB_TAGS_FILE="$(mktemp)"
+trap 'rm -f "${BB_TAGS_FILE}"' EXIT
+git ls-remote --tags --refs "${BB_REMOTE}" 2>/dev/null \
+    | awk '{ sub("refs/tags/", "", $2); print $2, $1 }' \
+    > "${BB_TAGS_FILE}"
+
+# per tag:
+BB_TAG_SHA=$(awk -v t="${tag}" '$1 == t {print $2; exit}' "${BB_TAGS_FILE}")
+```
+
+`--refs` suppresses annotated-tag peel lines (`<sha>\trefs/tags/X^{}`)
+so the SHA we compare against is the tag-object SHA, exactly what
+`git rev-parse refs/tags/X` returns locally.
+
+**Do NOT.**
+- Do NOT use `git rev-parse refs/tags/<name>` to determine the state
+  of any specific remote — it always returns local state.
+- Do NOT try to work around this with `git fetch <remote> --tags` +
+  another rev-parse — the fetch updates the same local namespace,
+  not a remote-scoped one.
+- Do NOT swap to `git push --tags` to "push everything" instead of
+  filtering — that ignores the staging-reachable filter and would
+  drag the TestFlight/feature-branch tags onto Bitbucket
+  (the whole reason this loop is filtered in the first place).
+
+Related: this is the kind of network-touching state check that
+[[F01]] (`Copy Artifacts` missing) would also benefit from — both
+findings document "you can't infer remote state from local refs".
+
+---

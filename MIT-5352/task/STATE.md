@@ -66,3 +66,12 @@ Next: pick up T02 (security-scan port) when user is ready.
   variant — clearer name). All mobile-v2 internal references swept;
   legacy `mobile/orchestrators/sit-orchestrator.Jenkinsfile` paths
   retained as legacy references.
+- `2026-05-14` — F05: `environment { … = "${params.X}" }` + `set -u`
+  abort on first parameterised run; fixed with defensive
+  `${VAR:-}` coercion in the orchestrator's Resolve Version stage.
+- `2026-05-14` — F06: sync-github-to-bitbucket skip check was
+  comparing local-only tag SHAs against itself (git's shared tag
+  namespace bug) — every tag falsely marked "skipped", nothing
+  pushed. Fixed by snapshotting Bitbucket's tag set via
+  `git ls-remote --tags --refs` and comparing against that. Re-run
+  the sync to backfill the ~2060 staging-reachable tags.
