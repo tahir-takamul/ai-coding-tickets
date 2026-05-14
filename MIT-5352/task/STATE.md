@@ -23,7 +23,7 @@
 | `mobile2/modules/android-build.Jenkinsfile` | stub (T03) | Echoes TODO; orchestrator wired. Port is T03. |
 | `mobile2/modules/ios-build.Jenkinsfile` | stub (T04) | Echoes TODO; orchestrator wired. Blocked on macOS hardware. |
 | `mobile2/modules/artifact-upload.Jenkinsfile` | stub (T05) | Echoes TODO; orchestrator wired. Port is T05. |
-| `mobile2/modules/mdm-distribute.Jenkinsfile` | echo placeholder (T06) | Real implementation blocked on MDM platform. |
+| `mobile2/modules/mdm-distribute.Jenkinsfile` | partial (T06) | Real Nexus download (curl + `Nexus-cred`); MDM upload is still echo, blocked on MDM platform. |
 | `mobile2/orchestrators/sit-orchestrator.Jenkinsfile` | wired end-to-end | Init → Sync → Resolve Version → Security Scans (parallel) → Build Android → Build iOS → Upload Nexus → Distribute to MDM. Fail-safe mode throughout. |
 | Jenkins job wiring | not started | Need new folder `Retail-CBDC/00-Mobile/` with `Modules/` + `Orchestrators/` subfolders containing one job each. |
 | UAT / PREPROD / PROD orchestrators | not started | After SIT chain is complete |
@@ -52,3 +52,10 @@ Next: pick up T02 (security-scan port) when user is ready.
   security-scan / android-build / ios-build / artifact-upload, echo
   placeholder for mdm-distribute, T02-T06 task specs landed,
   FINDING.md F01-F04 documented.
+- `2026-05-14` — Renamed Jenkins job paths in orchestrator from
+  `Retail-CBDC/MobileApp2/modules/...` to
+  `Retail-CBDC/00-Mobile/Modules/...` (PascalCase, platform-team
+  convention). Docs swept.
+- `2026-05-14` — `mdm-distribute` upgraded from pure-echo to real
+  Nexus download (curl + `Nexus-cred`) + echo MDM upload. T06.md
+  status flipped to `partial`.
