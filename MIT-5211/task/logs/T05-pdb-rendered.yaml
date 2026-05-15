@@ -1,0 +1,18 @@
+apiVersion: policy/v1
+kind: PodDisruptionBudget
+metadata:
+  name: apisix
+  namespace: "apisix-silmarils"
+  labels:
+    app: apisix
+    app.kubernetes.io/name: apisix
+    app.kubernetes.io/part-of: silmarils
+spec:
+  # minAvailable: 1 guarantees that voluntary disruptions (drains,
+  # rollouts) never reduce the data plane below one healthy pod. With
+  # HPA min_replicas=2 this never blocks a normal rolling update, but
+  # it does block a forced drain when only one pod is available.
+  minAvailable: 1
+  selector:
+    matchLabels:
+      app: apisix

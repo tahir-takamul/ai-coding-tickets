@@ -1,0 +1,106 @@
+apiVersion: networking.k8s.io/v1
+kind: NetworkPolicy
+metadata:
+  name: apisix
+  namespace: "apisix-silmarils"
+  labels:
+    app: apisix
+    app.kubernetes.io/name: apisix
+    app.kubernetes.io/part-of: silmarils
+# NOTE on CNI enforcement: This NetworkPolicy assumes the cluster CNI
+# enforces NPs (Azure CNI w/ network policy, Calico, or Cilium). On
+# kubenet AKS clusters NetworkPolicies are SILENTLY a no-op — see T05.md
+# §Notes. CNI preflight check is not performed here; verify out of band
+# (e.g. `kubectl -n kube-system get ds | grep -E 'azure-npm|calico|cilium'`).
+spec:
+  podSelector:
+    matchLabels:
+      app: apisix
+  policyTypes:
+    - Ingress
+    - Egress
+  # ---------------------------------------------------------------------------
+  # Ingress: cloudflared only.
+  #
+  # F01: the cloudflared Deployment has NO dedicated ServiceAccount — it
+  # inherits the namespace `default` SA shared by every pod in
+  # `ingress-nginx` (which also runs the regular nginx-ingress controller).
+  # Therefore we cannot select by ServiceAccount. We combine
+  # `namespaceSelector` (kubernetes.io/metadata.name = ingress-nginx) AND
+  # `podSelector` (app=cloudflared) so the policy admits cloudflared only —
+  # not the rest of the ingress-nginx namespace.
+  # ---------------------------------------------------------------------------
+  ingress:
+    - from:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: "ingress-nginx"
+          podSelector:
+            matchLabels:
+              app: cloudflared
+      ports:
+        - port: 19880
+          protocol: TCP
+        - port: 19888
+          protocol: TCP
+  # ---------------------------------------------------------------------------
+  # Egress: minimal allow-list.
+  #   1. dc-tang (forward-auth upstream) on its dynamic port.
+  #   2. kube-dns for cluster DNS resolution.
+  #   3. In-cluster simulator/LFI upstream pods (driven by
+  #      silmarils.apisix.allowed_egress_pods — empty by default; T06 will
+  #      populate with jisr-simulator / mbridge-mock).
+  #   4. Optional external LFI IP blocks (silmarils.apisix.allowed_egress_ip_blocks)
+  #      for upstreams that are not in-cluster.
+  # ---------------------------------------------------------------------------
+  egress:
+    # dc-tang forward-auth / static upstream
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: "silmarils-qa"
+          podSelector:
+            matchLabels:
+              app: dc-tang
+      ports:
+        - port: 28888
+          protocol: TCP
+    # kube-dns (UDP + TCP fallback)
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: kube-system
+          podSelector:
+            matchLabels:
+              k8s-app: kube-dns
+      ports:
+        - port: 53
+          protocol: UDP
+        - port: 53
+          protocol: TCP
+
+    # Allowed in-cluster egress: silmarils-qa/jisr-simulator
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: "silmarils-qa"
+          podSelector:
+            matchLabels:
+              app: "jisr-simulator"
+      ports:
+        - port: 8080
+          protocol: TCP
+
+    # Allowed in-cluster egress: silmarils-qa/mbridge-mock
+    - to:
+        - namespaceSelector:
+            matchLabels:
+              kubernetes.io/metadata.name: "silmarils-qa"
+          podSelector:
+            matchLabels:
+              app: "mbridge-mock"
+      ports:
+        - port: 8080
+          protocol: TCP
+
+

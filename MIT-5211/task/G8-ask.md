@@ -1,15 +1,21 @@
 # G8 — Sign-off ask for silmarils platform owner
 
-> **What we need from you (the silmarils platform / LFI integration owner):**
+> **Status update (2026-05-15)**: User direction — **proceed with
+> default assumptions for the first-time setup; iterate later**. This
+> document is no longer a blocker for T06. Captured below as a
+> follow-up review item, not a gate. The defaults T06 uses are
+> documented at the bottom under "Defaults applied (override later)".
+
+> **What we still need from you (the silmarils platform / LFI integration owner):**
 > Confirm the 17 `lfi-id → upstream` mappings for the silmarils-qa AKS
-> APISIX deployment. Once locked, these become the `org_routing` block
-> in `iac/eng-infra/shared-k8s/ansible/variables-qa.yaml` (rendered into
-> the in-cluster `apisix-org-routing` ConfigMap, read at request time by
-> `org-router.lua`).
+> APISIX deployment so we can replace the placeholder defaults below
+> with real values when the platform-team owns the per-LFI routing.
 >
 > Also: please confirm or correct the NBF/EIB CN→lfi-id pairs flagged
 > in **FINDING F03** below — they look like a swap in the source
-> template and we don't want to silently transcribe a bug.
+> template. T06 transcribed them verbatim (per user direction) to
+> avoid silently "fixing" something we don't fully understand. If you
+> confirm it's a typo, we patch in a follow-up commit.
 
 ---
 
@@ -138,3 +144,37 @@ values feed `variables-qa.yaml` in T06.
 **Blocker status**: T06 (wiring) is the only task blocked on G8. T02,
 T03, T04, T05, T07 are all unblocked and either DONE or actively
 authoring.
+
+---
+
+## Defaults applied (override later)
+
+Per user direction 2026-05-15 — "first-time setup, assume and work,
+change afterwards":
+
+- **CN whitelist** — transcribed verbatim from
+  `silmarils/apisix/apisix.yaml.template` lines 16-50 (all 17 entries
+  including the NBF/EIB swap flagged as F03).
+- **org_routing** — all 17 LFIs point at the in-cluster Jisr simulator:
+  ```yaml
+  lfi-XXX:
+    host: jisr-simulator.silmarils-qa.svc.cluster.local
+    port: 8080
+    scheme: http
+    path_prefix: /mbridge/ws
+  ```
+  This degenerates the per-LFI routing (every bank goes to the same
+  sim) — acceptable for first-time bring-up. The mBridge routes
+  (`/api/mbridge`) use upstream id 3 in the routes CM
+  (`mbridge-simulator:8080` fallback), but `org-router.lua`'s lookup
+  by `X-LFI-ID` will override that to Jisr based on this org_routing
+  block until you give us per-LFI values.
+- **`dc_tang`** — `dc-tang.silmarils-qa.svc.cluster.local:28888` /
+  scheme https (matches existing silmarils-qa deploy).
+- **`forward_auth`** — `https://dc-tang...:28888/auth/inbound`,
+  `ssl_verify: true`.
+
+When you reply with the real 17 lfi-id → upstream mappings, T06's
+`variables-qa.yaml` block is a single edit + re-apply of
+`--tags apisix-silmarils-lfi`. The checksum bump on the routes CM will
+trigger a rolling restart automatically.

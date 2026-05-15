@@ -30,21 +30,27 @@
 | T02 — Custom image + ACR pipeline | `T02.md` | **DONE (authored + build-verified, uncommitted in silmarils)** | Dockerfile + .dockerignore + build-push.sh + GHA workflow. `docker build` clean, 109.58 MB. Plugins at correct paths, UID 636. |
 | T03 — Layer 15a base | `T03.md` | **DONE (authored + syntax-checked, uncommitted in silmarils)** | 15a-apisix.yaml + 5 templates. Idempotent re-pause guard added; server-tls mounted at `/usr/local/apisix/certs/server` (F05 — T04 locks PEM-source approach). |
 | T04 — Layer 15b TLS + data plane | `T04.md` | **DONE (authored + verified, uncommitted in silmarils)** | 5 files: 15b-apisix-silmarils-lfi.yaml + 4 templates. Syntax-check clean; rendered ssls block PEM-indented correctly. F06 filed: `.p12` passphrase is `"password"` (var `client_certs.passphrase`). |
-| T05 — Production hardening (NP/PDB/HPA) | `T05.md` | **next** | Unblocked (T04 done). Slots between 15b step 7 (patch+unpause) and step 8 (rollout-wait) so pod comes up under full policy from first Ready state. F01 selector strategy still applies. |
-| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | pending | Blocked on T05 + T01 G8 (owner) + F03 (owner sign-off on CN/lfi-id swap). Schema add: `silmarils.apisix.client_certs.passphrase: "password"` (per F06). See `G8-ask.md`. |
+| T05 — Production hardening (NP/PDB/HPA) | `T05.md` | **DONE (authored + verified, uncommitted in silmarils)** | 3 templates + 3 append tasks in 15b (between step 7 patch and step 8 rollout-wait). F01 selector verified in rendered output. Two new schema vars surfaced: `allowed_egress_pods`, `allowed_egress_ip_blocks`. |
+| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | **next (assume-defaults mode)** | User direction 2026-05-15: proceed with defaults, iterate later. 17 lfi-id → jisr-simulator placeholders; CN whitelist transcribed verbatim (F03 NBF/EIB swap kept; owner can patch later). Schema adds: `client_certs.passphrase` (F06), `allowed_egress_pods`, `allowed_egress_ip_blocks` (T05). |
 | T07 — Cloudflare Tunnel sibling PR (eng-infra) | `T07.md` | **DONE (authored, uncommitted in eng-infra)** | One ingress-rule entry added to `eng-infra/cloudflare/terraform.tfvars:191` for `silmarils-qa-apisix.takamul.cc` → `https://apisix.apisix-silmarils.svc.cluster.local:19888`. Direct-to-Service (bypasses ingress-nginx — APISIX owns mTLS). |
 | T08 — QA smoke + E2E verification | `T08.md` | pending | Blocked on T06, T07. |
 
 ## In-flight task
 
-**T05 — Production hardening (NetworkPolicy + PDB + HPA)** is next.
-Appends 3 task blocks to `15b-apisix-silmarils-lfi.yaml` between step
-7 (patch+unpause) and step 8 (rollout-wait), plus 3 new templates.
-F01 dictates NetworkPolicy selector (namespaceSelector `ingress-nginx`
-+ podSelector `app=cloudflared` — no SA selection because cloudflared
-has no dedicated SA).
+**T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`)** is next.
+User direction: assume-defaults mode (2026-05-15) — proceed with
+placeholder values, iterate later. T06 will (a) insert two
+`include_tasks` blocks into `kubernetes.yaml`'s 3-line placeholder gap
+at lines 198-200, and (b) author the full `silmarils.apisix.*` block
+in `variables-qa.yaml` with:
+- 17 cn_whitelist entries verbatim from `apisix.yaml.template` (F03 swap kept)
+- 17 org_routing entries all → `jisr-simulator.silmarils-qa.svc:8080`
+- `client_certs.passphrase: "password"` (F06)
+- `allowed_egress_pods` covering jisr-simulator + mbridge-mock (T05)
+- `allowed_egress_ip_blocks: []` (T05)
 
-After T05 returns → verify → consolidated commit roll-up before T06.
+After T06 → only T08 remains (QA smoke + E2E — requires operator
+cluster access).
 
 **Open asks (no longer blocking authoring; do block T06 apply)**:
 - `G8-ask.md` filed for silmarils platform owner: confirm 17 lfi-id →
@@ -151,3 +157,19 @@ After T05 returns → verify → consolidated commit roll-up before T06.
   var (default `"password"`). T06 schema must add this. Silmarils-side
   uncommitted. Rendered artefact archived at
   `logs/T04-routes-cm-rendered.yaml`.
+- `2026-05-15` — **T05 DONE** (agent + verified). 3 templates
+  (`apisix-networkpolicy.yaml.j2`, `apisix-pdb.yaml.j2`,
+  `apisix-hpa.yaml.j2`) + 3 task blocks appended to
+  `15b-apisix-silmarils-lfi.yaml` between step 7 (patch+unpause) and
+  step 8 (rollout-wait). F01 verified in
+  `logs/T05-networkpolicy-rendered.yaml`: cloudflared selector is
+  `namespaceSelector(ingress-nginx) + podSelector(app=cloudflared)`
+  combined in a single from[] entry (AND semantics). Two new vars
+  surfaced for T06: `allowed_egress_pods`, `allowed_egress_ip_blocks`.
+  CNI-enforcement preflight intentionally omitted (out-of-band kubectl
+  check documented in NP template header).
+- `2026-05-15` — **User direction**: "do we really require details in
+  G8-ask, assume and work, we can change it afterwards, since this is
+  the first time setup". G8 owner-input deferred to follow-up; T06
+  unblocked with default placeholders documented in `G8-ask.md`'s
+  "Defaults applied" section.
