@@ -1,0 +1,12 @@
+# T01 G2 — apache/apisix:3.11.0-debian runtime UID
+# Verified on local Docker (Darwin) 2026-05-15
+
+$ docker run --rm --entrypoint id apache/apisix:3.11.0-debian
+uid=636(apisix) gid=636(apisix) groups=636(apisix)
+
+# Decision:
+#   T02 Dockerfile: `USER 636`, `COPY --chown=636:636 ...`
+#   T03 templates/apisix-deployment.yaml.j2:
+#     spec.template.spec.securityContext.runAsUser: 636
+#     spec.template.spec.securityContext.runAsGroup: 636
+#     spec.template.spec.securityContext.fsGroup: 636

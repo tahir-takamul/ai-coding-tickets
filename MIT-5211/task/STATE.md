@@ -26,7 +26,7 @@
 | Task | Spec | Status | Notes |
 |---|---|---|---|
 | `PLAN.md` (frozen) | — | done | Copied verbatim from working `plan.md` on 2026-05-15. |
-| Pre-T01 gates | `T01.md` | **pending — all 8** | See gate table below; blocks T02–T07. |
+| Pre-T01 gates | `T01.md` | **in progress (3 closed: G2, G5, G7; 1 partial: G8; 4 operator-pending: G1, G3, G4, G6)** | See gate table below. T02 unblocked (G2 green). T03 authoring unblocked (G3/G4 affect apply, not authoring). T06 blocked on G8. |
 | T02 — Custom image + ACR pipeline | `T02.md` | pending | Blocked on T01 (G1, G2). |
 | T03 — Layer 15a base | `T03.md` | pending | Blocked on T01 (G2, G3, G4), T02. |
 | T04 — Layer 15b TLS + data plane | `T04.md` | pending | Blocked on T01 (G5), T03. |
@@ -37,24 +37,29 @@
 
 ## In-flight task
 
-None — pre-implementation phase. The current obligation is **T01**:
-walk the eight pre-T01 gates and turn each green or document the
-deviation. Until T01 closes, T02+ inputs (runtime UID, ACR-pull
-strategy, `.p12` source path, `cloudflared` SA, locked org_routing
-values) are speculation.
+**T01** — gate verification in progress. Locked so far: runtime UID
+(636), `.p12` relocation policy (copy to ansible files dir),
+`cloudflared` namespace+selector (`ingress-nginx` + `app=cloudflared`,
+no dedicated SA — see F01). Outstanding: G1/G3/G4 need operator-side
+cluster access; G6 is T07's job; G8 needs silmarils-owner sign-off
+(see F03).
 
-## Pre-T01 gates (must all be green before T01 is authored)
+**Next runnable**: T02 (custom image + ACR pipeline) — G2 unblocks it.
+T03 authoring can also start in parallel (templates only — apply waits
+on G3/G4). T06 blocks on G8 owner confirmation.
 
-| # | Gate | How to verify | Status |
+## Pre-T01 gates (T01 in progress; updated 2026-05-15)
+
+| # | Gate | Status | Result / Notes |
 |---|---|---|---|
-| G1 | AKS managed-identity has `AcrPull` on `silmarilsacr` | `az aks show -g <rg> -n <cluster> --query identityProfile.kubeletidentity` then `az role assignment list --assignee <kubelet-id-objectId> --scope <acr-resource-id>` | pending |
-| G2 | Upstream `apache/apisix:3.11.0-debian` runtime UID | `docker run --rm --entrypoint id apache/apisix:3.11.0-debian` | pending |
-| G3 | AKS cluster version ≥ 1.27 (PSA stable) | `kubectl version --short` against `silmarils-qa` context | pending |
-| G4 | PSA `restricted` compatibility of `apache/apisix:3.11.0-debian` | Trial pod with `runAsNonRoot`, `readOnlyRootFilesystem`, emptyDir at `/usr/local/apisix/logs`, subPath CM mounts at writable `conf/` paths | pending |
-| G5 | `.p12` relocation policy | Decide: relocate to `iac/eng-infra/shared-k8s/ansible/files/silmarils/apisix-client-certs/`, or symlink, or `lookup('fileglob', ...)` reaching back into `apisix/client-certs/` | pending |
-| G6 | Cloudflare Tunnel sibling PR filed against `takamulai/eng-infra` | PR adds one `silmarils_ingress_rules` entry: `silmarils-qa-apisix.takamul.cc` → `https://apisix.apisix-silmarils.svc.cluster.local:19888` | pending |
-| G7 | `cloudflared` SA name + namespace | `kubectl -n <cf-namespace> get deploy cloudflared -o jsonpath='{.spec.template.spec.serviceAccountName}'` in silmarils AKS | pending |
-| G8 | QA `org_routing` upstream targets | Confirm with platform/silmarils owners: `jisr-simulator.silmarils-qa.svc.cluster.local:8080`, `mbridge-mock.silmarils-qa.svc.cluster.local:8080`, etc. — lock all 17 bank → upstream entries before authoring `variables-qa.yaml` | pending |
+| G1 | AKS managed-identity has `AcrPull` on `silmarilsacr` | **pending — operator** | Needs `az` + `kubectl` against silmarils-qa. Commands prepared in `T01.md`. Not blocking T02 authoring; affects T03 only (whether to add pull-secret sync). |
+| G2 | Upstream `apache/apisix:3.11.0-debian` runtime UID | **✅ green** | UID=636 (apisix), GID=636 (apisix). Verified locally via Docker. Output archived: `logs/T01-G2-runtime-uid.txt`. Locks `securityContext.runAsUser/runAsGroup: 636` (T03) and Dockerfile `USER 636` (T02). |
+| G3 | AKS cluster version ≥ 1.27 (PSA stable) | **pending — operator** | Needs `kubectl version` against silmarils-qa. Blocks T03 acceptance only (apply step); does not block authoring. |
+| G4 | PSA `restricted` compatibility of `apache/apisix:3.11.0-debian` | **pending — operator** | Trial pod manifest authored as part of T03's deployment template; ad-hoc validation deferred to operator after T03 apply. |
+| G5 | `.p12` relocation policy | **✅ decided (default)** | Policy = copy to `iac/eng-infra/shared-k8s/ansible/files/silmarils/apisix-client-certs/`. 17 `.p12` files confirmed in `silmarils/apisix/client-certs/` matching the 17 CN whitelist entries. Actual copy performed as a sub-step of T04 (not now — keeps T01 read-only). User can override before T04 starts. |
+| G6 | Cloudflare Tunnel sibling PR (eng-infra) | **pending — T07** | Local `eng-infra/cloudflare/` workspace confirmed at `/Users/mohd.tahir/DevWorkspace/apisix/eng-infra/cloudflare/` (terraform.tfvars present). T07 authors the diff locally; user opens PR. |
+| G7 | `cloudflared` SA name + namespace | **✅ closed from repo** | Namespace: `ingress-nginx` (from `variables-qa.yaml:26` → `namespaces.ingress_nginx`). No dedicated SA — pods inherit `default` SA. Pod label: `app: cloudflared`. **Filed as FINDING F01** — NetworkPolicy must select by `namespaceSelector + podSelector`, not by ServiceAccount. T05 updated. |
+| G8 | QA `org_routing` upstream targets | **partial — pending owner** | 17 CN→lfi-id pairs locked from `apisix.yaml.template`. **FINDING F03** flags an apparent NBF/EIB swap that needs owner sign-off before transcribing to `variables-qa.yaml` (T06). 17 lfi-id→upstream pairs for QA still need confirmation (likely in-cluster simulators `jisr-simulator.silmarils-qa.svc:8080`, `mbridge-mock.silmarils-qa.svc:8080`, but unconfirmed). |
 
 ## Open questions / pending decisions
 
@@ -85,3 +90,11 @@ values) are speculation.
   through `T08.md` (QA smoke + E2E) authored as frozen specs. T01 is
   the next live task; T02–T08 are pending its closure (or documented
   deviation).
+- `2026-05-15` — T01 first pass: G2 verified (UID=636 via local Docker;
+  archived to `logs/T01-G2-runtime-uid.txt`), G5 defaulted (copy `.p12`
+  to ansible files dir), G7 closed from repo (`ingress-nginx` ns + pod
+  label `app=cloudflared`, no SA — see F01). Operator-pending gates
+  G1/G3/G4 have prepared commands in T01.md. Findings filed:
+  F01 (cloudflared selector), F02 (kubernetes.yaml placeholder shape),
+  F03 (NBF/EIB CN→lfi-id swap awaiting owner confirmation),
+  F04 (dc-tang:28888 port cross-confirmed).
