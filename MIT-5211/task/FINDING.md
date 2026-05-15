@@ -96,6 +96,37 @@ Local-dev test users may rely on the current mapping for known reasons
 
 ---
 
+## F06 — Bank `.p12` passphrase is `"password"`, not empty
+
+**What**: T04's spec assumed the 17 bank `.p12` files use an empty
+passphrase. They do not — passphrase is **`"password"`**, matching
+`silmarils/apisix/setup-certs.sh:7` (`PASSWORD="password"` — same
+convention used across silmarils for `genericKeystore.p12`,
+`truststore.p12`, `mbridge-connector-keystore.p12`, etc.).
+Verified via direct CLI test: `openssl pkcs12 -passin pass:` fails
+with `Mac verify error`; `openssl pkcs12 -passin pass:password`
+succeeds and extracts the CA chain cleanly.
+
+**Why it matters**: 15b's CA-bundle assembly step (`openssl pkcs12 -in
+... -cacerts -nokeys -nomacver -passin pass:...`) needs the right
+passphrase or the playbook fails on every run. Also affects the
+silmarils convention going forward — any new bank cert must use the
+same password or `variables-qa.yaml` needs a per-cert override
+mechanism (out of scope for now).
+
+**How we handle it**: 15b reads the passphrase from a new variable
+**`silmarils.apisix.client_certs.passphrase`** (default `"password"`).
+T06 must add this to the `silmarils.apisix` block of
+`variables-qa.yaml` (explicit value, not relying on the default —
+makes rotation obvious).
+
+**Do NOT**: Hardcode `"password"` in the playbook. Even though it's
+the only value today, future cert reissuance might force a change and
+a hardcoded literal would silently work in dev/qa but break on the
+first SIT/UAT/PROD rotation.
+
+---
+
 ## F05 — server-tls Secret mounted at `/usr/local/apisix/certs/server` — T04 must align
 
 **What**: T03's `apisix-deployment.yaml.j2` mounts the `apisix-server-tls`

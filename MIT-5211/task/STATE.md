@@ -29,21 +29,22 @@
 | Pre-T01 gates | `T01.md` | **in progress (3 closed: G2, G5, G7; 1 partial: G8; 4 operator-pending: G1, G3, G4, G6)** | See gate table below. T02/T03 unblocked. T06 blocked on G8. |
 | T02 — Custom image + ACR pipeline | `T02.md` | **DONE (authored + build-verified, uncommitted in silmarils)** | Dockerfile + .dockerignore + build-push.sh + GHA workflow. `docker build` clean, 109.58 MB. Plugins at correct paths, UID 636. |
 | T03 — Layer 15a base | `T03.md` | **DONE (authored + syntax-checked, uncommitted in silmarils)** | 15a-apisix.yaml + 5 templates. Idempotent re-pause guard added; server-tls mounted at `/usr/local/apisix/certs/server` (F05 — T04 locks PEM-source approach). |
-| T04 — Layer 15b TLS + data plane | `T04.md` | **in flight (agent, background)** | All inputs locked (G5 done, F05 PEM-source approach decided, T03 mount paths known). Agent producing 5 files in silmarils/. |
-| T05 — Production hardening (NP/PDB/HPA) | `T05.md` | pending | Blocked on T04 (appends to 15b). NetworkPolicy selector revised per F01. |
-| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | pending | Blocked on T05 + T01 G8 (owner) + F03 (owner sign-off on CN/lfi-id swap). See `G8-ask.md`. |
+| T04 — Layer 15b TLS + data plane | `T04.md` | **DONE (authored + verified, uncommitted in silmarils)** | 5 files: 15b-apisix-silmarils-lfi.yaml + 4 templates. Syntax-check clean; rendered ssls block PEM-indented correctly. F06 filed: `.p12` passphrase is `"password"` (var `client_certs.passphrase`). |
+| T05 — Production hardening (NP/PDB/HPA) | `T05.md` | **next** | Unblocked (T04 done). Slots between 15b step 7 (patch+unpause) and step 8 (rollout-wait) so pod comes up under full policy from first Ready state. F01 selector strategy still applies. |
+| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | pending | Blocked on T05 + T01 G8 (owner) + F03 (owner sign-off on CN/lfi-id swap). Schema add: `silmarils.apisix.client_certs.passphrase: "password"` (per F06). See `G8-ask.md`. |
 | T07 — Cloudflare Tunnel sibling PR (eng-infra) | `T07.md` | **DONE (authored, uncommitted in eng-infra)** | One ingress-rule entry added to `eng-infra/cloudflare/terraform.tfvars:191` for `silmarils-qa-apisix.takamul.cc` → `https://apisix.apisix-silmarils.svc.cluster.local:19888`. Direct-to-Service (bypasses ingress-nginx — APISIX owns mTLS). |
 | T08 — QA smoke + E2E verification | `T08.md` | pending | Blocked on T06, T07. |
 
 ## In-flight task
 
-**T04 — Layer 15b overlay** is in flight (background agent). Producing
-5 files in `silmarils/iac/eng-infra/shared-k8s/ansible/`:
-`playbooks/15b-apisix-silmarils-lfi.yaml` + templates for
-server-cert / routes / org-routing / ca-bundle. PEM-source approach
-locked per F05 (direct-Jinja insert from materialized Secret).
+**T05 — Production hardening (NetworkPolicy + PDB + HPA)** is next.
+Appends 3 task blocks to `15b-apisix-silmarils-lfi.yaml` between step
+7 (patch+unpause) and step 8 (rollout-wait), plus 3 new templates.
+F01 dictates NetworkPolicy selector (namespaceSelector `ingress-nginx`
++ podSelector `app=cloudflared` — no SA selection because cloudflared
+has no dedicated SA).
 
-After T04 returns → verify → T05 (NP/PDB/HPA) can dispatch.
+After T05 returns → verify → consolidated commit roll-up before T06.
 
 **Open asks (no longer blocking authoring; do block T06 apply)**:
 - `G8-ask.md` filed for silmarils platform owner: confirm 17 lfi-id →
@@ -137,3 +138,16 @@ After T04 returns → verify → T05 (NP/PDB/HPA) can dispatch.
   files (15b playbook + 4 templates). Pre-locked: G5 done, F05
   PEM-source approach, T03 mount paths. ssl_verify=true for
   forward-auth (no setup-certs.sh flip — that's local-dev only).
+- `2026-05-15` — **T04 DONE** (agent + verified). 5 files in
+  `silmarils/iac/eng-infra/shared-k8s/ansible/`:
+  `playbooks/15b-apisix-silmarils-lfi.yaml` (9-step orchestration: cert
+  CR → poll Secret → CA bundle extract → routes CM → org-routing CM →
+  SHA256 over 3 CMs → strategic-merge patch checksum+unpause →
+  rollout-wait → smoke) plus templates for server-cert / routes /
+  org-routing / ca-bundle. Rendered ssls block verified for PEM
+  indentation correctness; cn_whitelist loop emits expected nested
+  form. F06 filed: `.p12` passphrase is `"password"` (not empty as
+  assumed) — plumbed via `silmarils.apisix.client_certs.passphrase`
+  var (default `"password"`). T06 schema must add this. Silmarils-side
+  uncommitted. Rendered artefact archived at
+  `logs/T04-routes-cm-rendered.yaml`.
