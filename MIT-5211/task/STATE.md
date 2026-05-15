@@ -26,27 +26,35 @@
 | Task | Spec | Status | Notes |
 |---|---|---|---|
 | `PLAN.md` (frozen) | — | done | Copied verbatim from working `plan.md` on 2026-05-15. |
-| Pre-T01 gates | `T01.md` | **in progress (3 closed: G2, G5, G7; 1 partial: G8; 4 operator-pending: G1, G3, G4, G6)** | See gate table below. T02 unblocked (G2 green). T03 authoring unblocked (G3/G4 affect apply, not authoring). T06 blocked on G8. |
-| T02 — Custom image + ACR pipeline | `T02.md` | pending | Blocked on T01 (G1, G2). |
-| T03 — Layer 15a base | `T03.md` | pending | Blocked on T01 (G2, G3, G4), T02. |
-| T04 — Layer 15b TLS + data plane | `T04.md` | pending | Blocked on T01 (G5), T03. |
-| T05 — Production hardening (NP/PDB/HPA) | `T05.md` | pending | Blocked on T01 (G7), T04. |
-| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | pending | Blocked on T01 (G8), T05. |
-| T07 — Cloudflare Tunnel sibling PR (eng-infra) | `T07.md` | pending | Blocked on T01 (G6); parallelisable with T03–T06. |
+| Pre-T01 gates | `T01.md` | **in progress (3 closed: G2, G5, G7; 1 partial: G8; 4 operator-pending: G1, G3, G4, G6)** | See gate table below. T02/T03 unblocked. T06 blocked on G8. |
+| T02 — Custom image + ACR pipeline | `T02.md` | **DONE (authored + build-verified, uncommitted in silmarils)** | Dockerfile + .dockerignore + build-push.sh + GHA workflow. `docker build` clean, 109.58 MB. Plugins at correct paths, UID 636. |
+| T03 — Layer 15a base | `T03.md` | **DONE (authored + syntax-checked, uncommitted in silmarils)** | 15a-apisix.yaml + 5 templates. Idempotent re-pause guard added; server-tls mounted at `/usr/local/apisix/certs/server` (F05 — T04 locks PEM-source approach). |
+| T04 — Layer 15b TLS + data plane | `T04.md` | **next** | Blocked on T01 G5 decision (defaulted to copy), T03 (done). F05 locks server-tls mount path; F03 not yet blocking (T04 doesn't transcribe CN list). |
+| T05 — Production hardening (NP/PDB/HPA) | `T05.md` | pending | Blocked on T01 G7 (closed), T04. NetworkPolicy selector revised per F01. |
+| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | pending | Blocked on T01 G8 + F03 (owner sign-off), T05. F02 confirms insert-into-gap (not replace). |
+| T07 — Cloudflare Tunnel sibling PR (eng-infra) | `T07.md` | pending | Eng-infra workspace confirmed local. Parallelisable with T04/T05. |
 | T08 — QA smoke + E2E verification | `T08.md` | pending | Blocked on T06, T07. |
 
 ## In-flight task
 
-**T01** — gate verification in progress. Locked so far: runtime UID
-(636), `.p12` relocation policy (copy to ansible files dir),
-`cloudflared` namespace+selector (`ingress-nginx` + `app=cloudflared`,
-no dedicated SA — see F01). Outstanding: G1/G3/G4 need operator-side
-cluster access; G6 is T07's job; G8 needs silmarils-owner sign-off
-(see F03).
+**T04** is next — Layer 15b overlay (cert-manager Certificate CR, CA
+bundle Secret from `.p12`s, routes CM, org-routing CM, checksum+unpause
+patch, rollout-wait). Blocked only on G5 policy (defaulted: copy `.p12`
+to ansible files dir) and F03 (NBF/EIB CN swap awaits owner — but T04
+doesn't transcribe the CN list yet; F03 only blocks T06).
 
-**Next runnable**: T02 (custom image + ACR pipeline) — G2 unblocks it.
-T03 authoring can also start in parallel (templates only — apply waits
-on G3/G4). T06 blocks on G8 owner confirmation.
+**T07** can run in parallel — small edit in
+`/Users/mohd.tahir/DevWorkspace/apisix/eng-infra/cloudflare/terraform.tfvars`
+adding one `silmarils_ingress_rules` entry. No agent needed.
+
+**Operator-side outstanding (not blocking authoring)**:
+- G1 — AcrPull on silmarilsacr
+- G3 — AKS version ≥ 1.27
+- G4 — PSA-restricted compatibility (verifiable post-apply)
+
+**Owner-side outstanding (blocks T06)**:
+- G8 — 17 lfi-id → QA upstream pairs
+- F03 — confirm NBF/EIB CN→lfi-id swap is intentional or fix in source
 
 ## Pre-T01 gates (T01 in progress; updated 2026-05-15)
 
@@ -98,3 +106,19 @@ on G3/G4). T06 blocks on G8 owner confirmation.
   F01 (cloudflared selector), F02 (kubernetes.yaml placeholder shape),
   F03 (NBF/EIB CN→lfi-id swap awaiting owner confirmation),
   F04 (dc-tang:28888 port cross-confirmed).
+- `2026-05-15` — **T02 DONE** (agent + verified). 4 files in
+  `silmarils/`: `apisix/Dockerfile`, `apisix/.dockerignore`,
+  `apisix/build-push.sh`, `.github/workflows/apisix-image.yaml`.
+  Local `docker build` clean → 109.58 MB image; plugins land at correct
+  paths, container runs as UID 636. Workflow mirrors mbridge-mock OIDC
+  + ACR push using `docker/build-push-action@v6`. Silmarils-side
+  uncommitted (per project rule — silmarils PR goes up after T04-T08).
+- `2026-05-15` — **T03 DONE** (agent + verified). 6 files in
+  `silmarils/iac/eng-infra/shared-k8s/ansible/`:
+  `playbooks/15a-apisix.yaml` + 5 templates (namespace, SA,
+  daemon-config CM, deployment, service). `ansible-playbook
+  --syntax-check` clean. Two intentional deviations from spec kept:
+  (1) idempotent re-pause guard so 15a re-runs don't clobber 15b's
+  unpause; (2) server-tls Secret mounted at `/usr/local/apisix/certs/server/`
+  — filed as F05 with PEM-source decision (direct-Jinja insert) locked
+  into T04.md. Silmarils-side uncommitted.

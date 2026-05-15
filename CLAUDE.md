@@ -71,4 +71,4 @@ Read in this order:
 | Ticket | Status | Brief |
 |---|---|---|
 | `MIT-3467` | DONE (T01–T16; T17 pending) | SonarQube Community Build on AKS + Jenkins integration + GHA PR pipeline. Entry point: `MIT-3467/task/SONAR.md`. |
-| `MIT-5211` | T01 in progress (G2/G5/G7 closed; G1/G3/G4/G6 operator-pending; G8 partial) | APISIX on silmarils-qa AKS: two-layer ansible (15a base / 15b silmarils LFI overlay) behind Cloudflare Tunnel; APISIX terminates mTLS via `X-Forwarded-Client-Cert`. Entry point: `MIT-5211/task/STATE.md`. |
+| `MIT-5211` | T02+T03 DONE (silmarils uncommitted); T04 next | APISIX on silmarils-qa AKS: two-layer ansible (15a base / 15b silmarils LFI overlay) behind Cloudflare Tunnel; APISIX terminates mTLS via `X-Forwarded-Client-Cert`. Entry point: `MIT-5211/task/STATE.md`. |

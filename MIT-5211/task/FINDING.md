@@ -96,6 +96,45 @@ Local-dev test users may rely on the current mapping for known reasons
 
 ---
 
+## F05 — server-tls Secret mounted at `/usr/local/apisix/certs/server` — T04 must align
+
+**What**: T03's `apisix-deployment.yaml.j2` mounts the `apisix-server-tls`
+Secret as a directory at `/usr/local/apisix/certs/server` (lines 118-120).
+cert-manager Secrets carry the keys `tls.crt`, `tls.key`, `ca.crt`. So the
+in-pod paths are:
+- `/usr/local/apisix/certs/server/tls.crt`
+- `/usr/local/apisix/certs/server/tls.key`
+- `/usr/local/apisix/certs/server/ca.crt` (unused — silmarils-ca-issuer
+  cert chain is internal-only; APISIX presents this server cert to
+  cloudflared which terminates with `origin_no_tls_verify: true`).
+
+**Why it matters**: T04 renders the `apisix-routes` ConfigMap from
+`apisix/apisix.yaml.template`, which contains an `ssls:` block with
+`__SSL_CERT__` / `__SSL_KEY__` placeholders. Two ways to fill them in:
+1. **Direct-Jinja insert** of PEMs read from the materialized Secret via
+   `k8s_info` (PLAN.md §15b step 4 wording).
+2. **Reference the mount paths** so APISIX reads PEM files at startup;
+   no PEM material baked into the CM.
+
+The two approaches are mutually compatible (you could do both), but the
+operational characteristics differ: (1) requires a CM rewrite + pod
+rollout on cert rotation; (2) only needs a pod restart.
+
+**How we handle it**: For first iteration, **direct-Jinja insert** —
+keeps T04 simple, the silmarils-ca-issuer cert is 90d and HPA is 2-4
+pods so rotation churn is tolerable. The mount stays in T03's Deployment
+template as defence-in-depth (and for the future approach 2 transition).
+T04's `apisix-routes.yaml.j2` reads `apisix_server_cert_pem` /
+`apisix_server_key_pem` from a prior `k8s_info` task and inserts them
+into the `ssls.cert` / `ssls.key` fields.
+
+**Do NOT**: Use a Jinja path-only reference (`cert: "/usr/local/apisix/certs/server/tls.crt"`)
+without first verifying APISIX 3.11 standalone mode accepts file paths
+in `ssls.cert` instead of PEM strings — older versions accepted only
+inline PEM. If the path form is desired, prototype it first.
+
+---
+
 ## F04 — `apisix.yaml.template` upstream port for dc-tang matches PLAN.md
 
 **What**: PLAN.md assumes dc-tang upstream at port 28888 (NetworkPolicy
