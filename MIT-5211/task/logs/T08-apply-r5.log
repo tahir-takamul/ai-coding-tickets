@@ -1,0 +1,212 @@
+Do you want to \e[1mPROVISION\e[0m the \e[1mqa\e[0m environment? (Type \e[1;31mYES\e[0m to continue)
+\e[34m>>>\e[0m Resolving infrastructure values (env: qa)
+\e[34m>>>\e[0m Terraform state for env=qa is unavailable or empty — using global.inc/az fallbacks
+\e[34m>>>\e[0m Loading secrets from Key Vault: silmarils-kv
+\e[34m>>>\e[0m Resolved cluster: silmarils-aks (rg=silmarils-rg, region=uaenorth, env=qa)
+\e[34m>>>\e[0m Generating kubeconfig for AKS cluster silmarils-aks
+\e[34m>>>\e[0m Generating inventory: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/temp/qa-inventory.yaml
+\e[34m>>>\e[0m Generated inventory with 33 variables
+\e[34m>>>\e[0m Running: ansible-playbook -i /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/temp/qa-inventory.yaml main.yaml --tags apisix-base,apisix-silmarils-lfi -e platform_type=kubernetes
+
+PLAY [localhost] ***************************************************************
+
+TASK [Gathering Facts] *********************************************************
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/00-initialize-variables.yaml for localhost[0m
+
+TASK [Validate required variables] *********************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "changed": false,[0m
+[0;32m    "msg": "All assertions passed"[0m
+[0;32m}[0m
+
+TASK [Set common facts] ********************************************************
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/inc/preflight.yml for localhost[0m
+
+TASK [preflight — Verify kubectl is available] *********************************
+[0;32mok: [localhost][0m
+
+TASK [preflight — Verify cluster is reachable] *********************************
+[0;32mok: [localhost][0m
+
+TASK [preflight — Verify helm is available] ************************************
+[0;32mok: [localhost][0m
+
+TASK [debug] *******************************************************************
+[0;32mok: [localhost] => {[0m
+[0;32m    "msg": "Running tags: ['apisix-silmarils-lfi', 'apisix-base']"[0m
+[0;32m}[0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/15a-apisix.yaml for localhost[0m
+
+TASK [APISIX base — preflight checks] ******************************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/inc/preflight.yml for localhost[0m
+
+TASK [preflight — Verify kubectl is available] *********************************
+[0;32mok: [localhost][0m
+
+TASK [preflight — Verify cluster is reachable] *********************************
+[0;32mok: [localhost][0m
+
+TASK [preflight — Verify helm is available] ************************************
+[0;32mok: [localhost][0m
+
+TASK [Create APISIX namespace (PSA restricted)] ********************************
+[0;32mok: [localhost][0m
+
+TASK [Create APISIX ServiceAccount] ********************************************
+[0;32mok: [localhost][0m
+
+TASK [Create APISIX daemon-config ConfigMap] ***********************************
+[0;32mok: [localhost][0m
+
+TASK [Probe existing APISIX Deployment paused-state (for idempotent re-apply)] ***
+[0;32mok: [localhost][0m
+
+TASK [Decide whether Deployment should be rendered paused] *********************
+[0;32mok: [localhost][0m
+
+TASK [Create / update APISIX Deployment] ***************************************
+[0;32mok: [localhost][0m
+
+TASK [Create APISIX ClusterIP Service] *****************************************
+[0;32mok: [localhost][0m
+
+TASK [ansible.builtin.include_tasks] *******************************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/15b-apisix-silmarils-lfi.yaml for localhost[0m
+
+TASK [APISIX silmarils LFI — preflight checks] *********************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/inc/preflight.yml for localhost[0m
+
+TASK [preflight — Verify kubectl is available] *********************************
+[0;32mok: [localhost][0m
+
+TASK [preflight — Verify cluster is reachable] *********************************
+[0;32mok: [localhost][0m
+
+TASK [preflight — Verify helm is available] ************************************
+[0;32mok: [localhost][0m
+
+TASK [Apply APISIX server TLS Certificate CR (cert-manager)] *******************
+[0;32mok: [localhost][0m
+
+TASK [Wait for apisix-server-tls Secret to be materialized by cert-manager] ****
+[0;32mok: [localhost][0m
+
+TASK [Inspect Certificate apisix-server-tls] ***********************************
+[0;36mskipping: [localhost][0m
+
+TASK [Inspect CertificateRequests in namespace] ********************************
+[0;36mskipping: [localhost][0m
+
+TASK [Inspect Orders in namespace] *********************************************
+[0;36mskipping: [localhost][0m
+
+TASK [Inspect Challenges in namespace] *****************************************
+[0;36mskipping: [localhost][0m
+
+TASK [Dump cert-manager objects (operator visibility)] *************************
+[0;36mskipping: [localhost][0m
+
+TASK [Fail loud — apisix-server-tls Secret never materialized] *****************
+[0;36mskipping: [localhost][0m
+
+TASK [Extract CA chain PEM from each bank .p12] ********************************
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/icbc.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/sharjahislamicbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/mashreq.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/citibank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/centralbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/abudhabiislamicbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/standardcharteredbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/emiratesnbd.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/commercialbankofdubai.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/dubaiislamicbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/bankofchina.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/nationalbankoffujairah.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/hsbcmiddleeast.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/firstabudhabibank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/emiratesislamicbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/abudhabicommercialbank.p12)[0m
+[0;32mok: [localhost] => (item=/Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/../files/silmarils/apisix-client-certs/rakbank.p12)[0m
+
+TASK [Concatenate bank CA chains into a single PEM blob] ***********************
+[0;32mok: [localhost][0m
+
+TASK [Apply apisix-ca-bundle Secret] *******************************************
+[0;32mok: [localhost][0m
+
+TASK [Read materialized apisix-server-tls Secret] ******************************
+[0;32mok: [localhost][0m
+
+TASK [Decode server cert/key into facts for routes CM rendering] ***************
+[0;32mok: [localhost][0m
+
+TASK [Apply apisix-routes ConfigMap] *******************************************
+[0;32mok: [localhost][0m
+
+TASK [Apply apisix-org-routing ConfigMap] **************************************
+[0;32mok: [localhost][0m
+
+TASK [Read apisix-daemon-config CM (created by 15a) for checksum] **************
+[0;32mok: [localhost][0m
+
+TASK [Read apisix-routes CM for checksum] **************************************
+[0;32mok: [localhost][0m
+
+TASK [Read apisix-org-routing CM for checksum] *********************************
+[0;32mok: [localhost][0m
+
+TASK [Compute SHA256 over the three ConfigMaps (deterministic, sort_keys)] *****
+[0;32mok: [localhost][0m
+
+TASK [Patch apisix Deployment — set checksum/config annotation on pod template AND unpause] ***
+[0;33mchanged: [localhost][0m
+
+TASK [Apply APISIX NetworkPolicy] **********************************************
+[0;32mok: [localhost][0m
+
+TASK [Apply APISIX PodDisruptionBudget] ****************************************
+[0;32mok: [localhost][0m
+
+TASK [Apply APISIX HorizontalPodAutoscaler] ************************************
+[0;32mok: [localhost][0m
+
+TASK [Wait for APISIX Deployment rollout] **************************************
+[0;36mincluded: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/inc/rollout-wait.yml for localhost[0m
+
+TASK [rollout — Wait for apisix] ***********************************************
+[0;31m[ERROR]: Task failed: Module failed: non-zero return code[0m
+[0;31mOrigin: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/inc/rollout-wait.yml:9:3[0m
+[0;31m[0m
+[0;31m7 #   rw_timeout    — optional, default 600s[0m
+[0;31m8[0m
+[0;31m9 - name: "rollout — Wait for {{ rw_deployment }}"[0m
+[0;31m    ^ column 3[0m
+[0;31m[0m
+[0;31mfatal: [localhost]: FAILED! => {"changed": false, "cmd": ["kubectl", "rollout", "status", "deployment/apisix", "-n", "apisix-silmarils", "--timeout=600s"], "delta": "0:00:02.326872", "end": "2026-05-16 00:32:51.861465", "msg": "non-zero return code", "rc": 1, "start": "2026-05-16 00:32:49.534593", "stderr": "error: deployment \"apisix\" exceeded its progress deadline", "stderr_lines": ["error: deployment \"apisix\" exceeded its progress deadline"], "stdout": "", "stdout_lines": []}[0m
+[0;36m...ignoring[0m
+
+TASK [rollout — Auto-rollback apisix on failure] *******************************
+[0;33mchanged: [localhost][0m
+
+TASK [rollout — Fail if apisix rollout failed] *********************************
+[0;31m[ERROR]: Task failed: Action failed: apisix rollout failed — automatic rollback executed. Check: kubectl describe deployment/apisix -n apisix-silmarils[0m
+[0;31mOrigin: /Users/mohd.tahir/DevWorkspace/apisix/silmarils/iac/eng-infra/shared-k8s/ansible/playbooks/inc/rollout-wait.yml:25:3[0m
+[0;31m[0m
+[0;31m23   changed_when: true[0m
+[0;31m24[0m
+[0;31m25 - name: "rollout — Fail if {{ rw_deployment }} rollout failed"[0m
+[0;31m     ^ column 3[0m
+[0;31m[0m
+[0;31mfatal: [localhost]: FAILED! => {"changed": false, "msg": "apisix rollout failed — automatic rollback executed. Check: kubectl describe deployment/apisix -n apisix-silmarils"}[0m
+
+PLAY RECAP *********************************************************************
+[0;31mlocalhost[0m                  : [0;32mok=46  [0m [0;33mchanged=2   [0m unreachable=0    [0;31mfailed=1   [0m [0;36mskipped=6   [0m rescued=0    [1;35mignored=1   [0m
+

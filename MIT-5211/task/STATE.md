@@ -33,36 +33,29 @@
 | T05 — Production hardening (NP/PDB/HPA) | `T05.md` | **DONE (authored + verified, uncommitted in silmarils)** | 3 templates + 3 append tasks in 15b (between step 7 patch and step 8 rollout-wait). F01 selector verified in rendered output. Two new schema vars surfaced: `allowed_egress_pods`, `allowed_egress_ip_blocks`. |
 | T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | **DONE (authored + verified, uncommitted in silmarils)** | kubernetes.yaml: +13 lines for two `include_tasks` blocks at the 15a-b gap. variables-qa.yaml: 144-line `silmarils.apisix.*` block (17 CN + 17 org_routing all → Jisr sim, no YAML anchors per file convention). F07 filed: `image.tag: "main"` won't resolve in ACR — needs T02 CI run + manual tag bump before T08. |
 | T07 — Cloudflare Tunnel sibling PR (eng-infra) | `T07.md` | **DONE (authored, uncommitted in eng-infra)** | One ingress-rule entry added to `eng-infra/cloudflare/terraform.tfvars:191` for `silmarils-qa-apisix.takamul.cc` → `https://apisix.apisix-silmarils.svc.cluster.local:19888`. Direct-to-Service (bypasses ingress-nginx — APISIX owns mTLS). |
-| T08 — QA smoke + E2E verification | `T08.md` | pending | Blocked on T06, T07. |
+| T08 — QA smoke + E2E verification | `T08.md` | **DONE (live in QA, 2026-05-16)** | All gates closed: G1 ✓ (AcrPull on ServicePrincipal), G3 ✓ (AKS 1.33), G4 ✓ (PSA Restricted compatible w/ F09 relaxation). Pods 2/2 Ready, 0 restarts. Tunnel smokes all pass. F08/F09/F10 filed during deploy. |
 
 ## In-flight task
 
-**None — authoring complete.** All seven authorable tasks (T01–T07)
-DONE. Only **T08 (QA smoke + E2E)** remains and is blocked on:
+**None — MIT-5211 is LIVE on silmarils-qa.** APISIX is deployed,
+2/2 Ready, end-to-end verified via Cloudflare-fronted smoke tests.
 
-1. **Operator** — needs `silmarils-aks-admin` kubectl context to:
-   - Verify the operator-pending gates G1 / G3 / G4 against the live
-     silmarils-qa cluster (commands in `T01.md`).
-   - Run `ansible-playbook iac/eng-infra/shared-k8s/ansible/kubernetes.yaml --tags apisix-base,apisix-silmarils-lfi -e silmarils_environment=qa platform_type=kubernetes`.
-   - Capture verification outputs into `task/verified/`.
-2. **First CI image build (F07)** — silmarils PR with T02 must merge,
-   GH Actions workflow `apisix-image.yaml` must run, and the ACR tag
-   it emits must be pasted into `variables-qa.yaml`'s
-   `silmarils.apisix.image.tag` (replacing the `"main"` placeholder).
-3. **T07 eng-infra PR merged** — `silmarils-qa-apisix.takamul.cc`
-   tunnel rule must be in production before the through-tunnel smoke.
+### Live endpoint
+- `https://silmarils-qa-apisix.takamul.cc` → Cloudflare Tunnel →
+  `https://apisix.apisix-silmarils.svc.cluster.local:19888` (ClusterIP)
+- Image: `silmarilsacr.azurecr.io/silmarils-apisix:release-v-126-20260515-100056-1-g7b55dc82`
+- Cluster: `silmarils-aks` (single cluster; `silmarils-qa` is a
+  namespace alongside `apisix-silmarils`)
 
-## What's ready to ship as PRs
+### Smoke results (2026-05-16)
+- No cert → **403** "client certificate required" ✓
+- Valid FAB cert → **401** SOAP envelope from dc-tang ✓
+  (deep happy path: tunnel → APISIX → cert-validator → org-router →
+  forward-auth → dc-tang reached, responded with structured "no valid
+  API key" — real traffic with a real API key would get 200)
+- Bad CN → **403** "certificate validation failed" ✓
 
-- **silmarils PR (MIT-5211)** — 35 uncommitted changes:
-  - T02: `apisix/Dockerfile`, `.dockerignore`, `build-push.sh`, `.github/workflows/apisix-image.yaml`
-  - T03: `playbooks/15a-apisix.yaml` + 5 templates
-  - T04: `playbooks/15b-apisix-silmarils-lfi.yaml` + 4 templates
-  - T05: 3 hardening templates + 3 task-blocks appended to 15b
-  - T06: `kubernetes.yaml` edit + `variables-qa.yaml` apisix block
-  - G5: 17 `.p12` files copied to ansible files dir
-- **eng-infra sibling PR** — 1 uncommitted edit:
-  - T07: `cloudflare/terraform.tfvars` — one new `silmarils_ingress_rules` entry
+Artefacts under `task/verified/`.
 
 **Open asks (no longer blocking authoring; do block T06 apply)**:
 - `G8-ask.md` filed for silmarils platform owner: confirm 17 lfi-id →
@@ -203,3 +196,25 @@ DONE. Only **T08 (QA smoke + E2E)** remains and is blocked on:
   Silmarils-side: 35 uncommitted local files (T02 + T03 + T04 + T05 +
   T06 + 17 .p12 copies). Eng-infra-side: 1 uncommitted edit (T07).
   Both ready to surface as PRs.
+- `2026-05-15` — Branches pushed: silmarils `MIT-5211 7b55dc82`,
+  eng-infra `MIT-5211 ecdf9d7`.
+- `2026-05-15` — APISIX image built locally (build-push.sh) and pushed
+  to ACR: `silmarilsacr.azurecr.io/silmarils-apisix:release-v-126-20260515-100056-1-g7b55dc82`.
+  `variables-qa.yaml` `image.tag` pinned (silmarils `5faba419`).
+- `2026-05-15` — **Operator gates closed**: G1 ✓ (AcrPull on
+  ServicePrincipal for kubelet identity), G3 ✓ (AKS 1.33).
+- `2026-05-15` — **Cloudflare side live**: terraform `-target=`
+  apply added DNS, Access app, Access policy bypass, tunnel ingress
+  rule for `silmarils-qa-apisix.takamul.cc`. Required two module
+  fixes (eng-infra `74e0d4b`, `3a0cc44`): apisix bypass policy +
+  exclude apisix from email-domain policy loop (precedence collision).
+- `2026-05-16` — **APISIX LIVE on silmarils-aks (apisix-silmarils ns)**.
+  Deploy required four ansible re-runs surfacing F08 (initContainer
+  pattern for /usr/local/apisix/conf), F09 (readOnlyRootFilesystem
+  needs per-temp-dir emptyDirs — disabled for first-bring-up),
+  F10 (liveness /healthz → tcpSocket :19888). Final state: 2/2 Ready,
+  0 restarts. Tunnel smokes all pass (403 missing cert / 401 SOAP
+  from dc-tang on valid FAB cert / 403 bad CN). silmarils commits:
+  `415df7b0` (F08+F09 template fixes) → `cf72d9dc` (F10 template
+  alignment). G4 ✓ empirically (PSA Restricted compatible with the
+  F09 relaxation, all other hardening kept).

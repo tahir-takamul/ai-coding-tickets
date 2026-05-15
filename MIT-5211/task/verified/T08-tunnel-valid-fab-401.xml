@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<SOAP-ENV:Envelope xmlns:SOAP-ENV="http://schemas.xmlsoap.org/soap/envelope/">
+  <SOAP-ENV:Header>
+    <Ver>01</Ver>
+    <SndDtTm>2026-05-15T20:36:48.666095064Z</SndDtTm>
+    <MsgTp>admi.098.001.01</MsgTp>
+    <MsgDrn>S</MsgDrn>
+    <Network>mBridge</Network>
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns2:Document xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:admi.098.001.01">
+      <ns2:Rct>
+        <ns2:MsgHdr>
+          <ns2:MsgId>d302cf1b-bd2d-48c8-a647-67e30f68982a</ns2:MsgId>
+          <ns2:CreDtTm>2026-05-15T20:36:48.666Z</ns2:CreDtTm>
+        </ns2:MsgHdr>
+        <ns2:RctDtls>
+          <ns2:ReqHdlg>
+            <ns2:StsCd>RJCT</ns2:StsCd>
+            <ns2:Desc>Missing X-LFI-API-KEY header</ns2:Desc>
+          </ns2:ReqHdlg>
+        </ns2:RctDtls>
+      </ns2:Rct>
+    </ns2:Document>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>

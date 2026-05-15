@@ -1,0 +1,28 @@
+NAME                         READY   STATUS    RESTARTS   AGE    IP           NODE                              NOMINATED NODE   READINESS GATES
+pod/apisix-9576ffb6b-pdlxl   1/1     Running   0          101s   10.90.4.11   aks-default-38247184-vmss000003   <none>           <none>
+pod/apisix-9576ffb6b-vrmzh   1/1     Running   0          106s   10.90.4.7    aks-default-38247184-vmss000003   <none>           <none>
+
+NAME                     READY   UP-TO-DATE   AVAILABLE   AGE   CONTAINERS   IMAGES                                                                               SELECTOR
+deployment.apps/apisix   2/2     2            2           54m   apisix       silmarilsacr.azurecr.io/silmarils-apisix:release-v-126-20260515-100056-1-g7b55dc82   app=apisix
+
+NAME             TYPE        CLUSTER-IP    EXTERNAL-IP   PORT(S)               AGE   SELECTOR
+service/apisix   ClusterIP   10.0.128.10   <none>        19880/TCP,19888/TCP   54m   app=apisix
+
+NAME                             DATA   AGE
+configmap/apisix-daemon-config   1      54m
+configmap/apisix-org-routing     1      54m
+configmap/apisix-routes          1      54m
+configmap/kube-root-ca.crt       1      55m
+
+NAME                       TYPE                DATA   AGE
+secret/apisix-ca-bundle    Opaque              1      54m
+secret/apisix-server-tls   kubernetes.io/tls   3      54m
+
+NAME                                     POD-SELECTOR   AGE
+networkpolicy.networking.k8s.io/apisix   app=apisix     54m
+
+NAME                                MIN AVAILABLE   MAX UNAVAILABLE   ALLOWED DISRUPTIONS   AGE
+poddisruptionbudget.policy/apisix   1               N/A               1                     54m
+
+NAME                                         REFERENCE           TARGETS              MINPODS   MAXPODS   REPLICAS   AGE
+horizontalpodautoscaler.autoscaling/apisix   Deployment/apisix   cpu: <unknown>/70%   2         4         2          54m
