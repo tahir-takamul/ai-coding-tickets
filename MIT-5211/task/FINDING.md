@@ -96,6 +96,45 @@ Local-dev test users may rely on the current mapping for known reasons
 
 ---
 
+## F07 — First-bring-up `image.tag` has no real ACR tag to point at yet
+
+**What**: T02's `apisix-image.yaml` workflow emits
+`APISIX_VERSION="$(git describe --tags --always)"`. Until that workflow
+runs on `main` for the first time **and** the silmarils repo has at
+least one git tag reachable from HEAD, `git describe --tags --always`
+returns just the short SHA (`g<sha>`), and no image with that tag
+exists in ACR until the workflow run completes. T06 set
+`silmarils.apisix.image.tag: "main"` as a placeholder, which **will
+not resolve in ACR** — `:main` is not pushed by the workflow.
+
+**Why it matters**: Running T08 (`ansible-playbook ... --tags
+apisix-base,apisix-silmarils-lfi`) before T02's CI workflow has
+completed → `ImagePullBackOff` on the apisix Deployment → pods never
+go Ready → T08 fails. This is also true if T02 CI has run but
+`variables-qa.yaml` was not updated to the real tag CI emitted.
+
+**How we handle it (two paths, pick one before T08)**:
+
+1. **Manual tag bump (recommended for first apply)**: After T02's
+   silmarils PR merges and CI runs, read the tag from
+   `az acr repository show-tags --name silmarilsacr --repository silmarils-apisix`,
+   update `variables-qa.yaml`'s `silmarils.apisix.image.tag` to that
+   exact value, commit, then run T08. One extra step but no workflow
+   changes — keeps tags immutable.
+2. **Add moving `:main` tag to the workflow**: Amend T02's
+   `apisix-image.yaml` `Compute image tags` step to also push `:main`
+   (similar to how it currently pushes `:latest` only on tag refs).
+   T08 then works on first run with `image.tag: "main"`. Trades tag
+   immutability for ergonomics — acceptable for first-bring-up only;
+   revert before SIT/UAT/PROD.
+
+**Do NOT**: Use `imagePullPolicy: Always` to mask this. The Deployment
+template already conditions pullPolicy on the tag string
+(`Always` only when tag == `latest`). Forcing `Always` everywhere
+hides bad tag values and slows pod start.
+
+---
+
 ## F06 — Bank `.p12` passphrase is `"password"`, not empty
 
 **What**: T04's spec assumed the 17 bank `.p12` files use an empty

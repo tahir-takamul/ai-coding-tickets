@@ -31,26 +31,38 @@
 | T03 — Layer 15a base | `T03.md` | **DONE (authored + syntax-checked, uncommitted in silmarils)** | 15a-apisix.yaml + 5 templates. Idempotent re-pause guard added; server-tls mounted at `/usr/local/apisix/certs/server` (F05 — T04 locks PEM-source approach). |
 | T04 — Layer 15b TLS + data plane | `T04.md` | **DONE (authored + verified, uncommitted in silmarils)** | 5 files: 15b-apisix-silmarils-lfi.yaml + 4 templates. Syntax-check clean; rendered ssls block PEM-indented correctly. F06 filed: `.p12` passphrase is `"password"` (var `client_certs.passphrase`). |
 | T05 — Production hardening (NP/PDB/HPA) | `T05.md` | **DONE (authored + verified, uncommitted in silmarils)** | 3 templates + 3 append tasks in 15b (between step 7 patch and step 8 rollout-wait). F01 selector verified in rendered output. Two new schema vars surfaced: `allowed_egress_pods`, `allowed_egress_ip_blocks`. |
-| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | **next (assume-defaults mode)** | User direction 2026-05-15: proceed with defaults, iterate later. 17 lfi-id → jisr-simulator placeholders; CN whitelist transcribed verbatim (F03 NBF/EIB swap kept; owner can patch later). Schema adds: `client_certs.passphrase` (F06), `allowed_egress_pods`, `allowed_egress_ip_blocks` (T05). |
+| T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`) | `T06.md` | **DONE (authored + verified, uncommitted in silmarils)** | kubernetes.yaml: +13 lines for two `include_tasks` blocks at the 15a-b gap. variables-qa.yaml: 144-line `silmarils.apisix.*` block (17 CN + 17 org_routing all → Jisr sim, no YAML anchors per file convention). F07 filed: `image.tag: "main"` won't resolve in ACR — needs T02 CI run + manual tag bump before T08. |
 | T07 — Cloudflare Tunnel sibling PR (eng-infra) | `T07.md` | **DONE (authored, uncommitted in eng-infra)** | One ingress-rule entry added to `eng-infra/cloudflare/terraform.tfvars:191` for `silmarils-qa-apisix.takamul.cc` → `https://apisix.apisix-silmarils.svc.cluster.local:19888`. Direct-to-Service (bypasses ingress-nginx — APISIX owns mTLS). |
 | T08 — QA smoke + E2E verification | `T08.md` | pending | Blocked on T06, T07. |
 
 ## In-flight task
 
-**T06 — Wiring (`kubernetes.yaml` + `variables-qa.yaml`)** is next.
-User direction: assume-defaults mode (2026-05-15) — proceed with
-placeholder values, iterate later. T06 will (a) insert two
-`include_tasks` blocks into `kubernetes.yaml`'s 3-line placeholder gap
-at lines 198-200, and (b) author the full `silmarils.apisix.*` block
-in `variables-qa.yaml` with:
-- 17 cn_whitelist entries verbatim from `apisix.yaml.template` (F03 swap kept)
-- 17 org_routing entries all → `jisr-simulator.silmarils-qa.svc:8080`
-- `client_certs.passphrase: "password"` (F06)
-- `allowed_egress_pods` covering jisr-simulator + mbridge-mock (T05)
-- `allowed_egress_ip_blocks: []` (T05)
+**None — authoring complete.** All seven authorable tasks (T01–T07)
+DONE. Only **T08 (QA smoke + E2E)** remains and is blocked on:
 
-After T06 → only T08 remains (QA smoke + E2E — requires operator
-cluster access).
+1. **Operator** — needs `silmarils-aks-admin` kubectl context to:
+   - Verify the operator-pending gates G1 / G3 / G4 against the live
+     silmarils-qa cluster (commands in `T01.md`).
+   - Run `ansible-playbook iac/eng-infra/shared-k8s/ansible/kubernetes.yaml --tags apisix-base,apisix-silmarils-lfi -e silmarils_environment=qa platform_type=kubernetes`.
+   - Capture verification outputs into `task/verified/`.
+2. **First CI image build (F07)** — silmarils PR with T02 must merge,
+   GH Actions workflow `apisix-image.yaml` must run, and the ACR tag
+   it emits must be pasted into `variables-qa.yaml`'s
+   `silmarils.apisix.image.tag` (replacing the `"main"` placeholder).
+3. **T07 eng-infra PR merged** — `silmarils-qa-apisix.takamul.cc`
+   tunnel rule must be in production before the through-tunnel smoke.
+
+## What's ready to ship as PRs
+
+- **silmarils PR (MIT-5211)** — 35 uncommitted changes:
+  - T02: `apisix/Dockerfile`, `.dockerignore`, `build-push.sh`, `.github/workflows/apisix-image.yaml`
+  - T03: `playbooks/15a-apisix.yaml` + 5 templates
+  - T04: `playbooks/15b-apisix-silmarils-lfi.yaml` + 4 templates
+  - T05: 3 hardening templates + 3 task-blocks appended to 15b
+  - T06: `kubernetes.yaml` edit + `variables-qa.yaml` apisix block
+  - G5: 17 `.p12` files copied to ansible files dir
+- **eng-infra sibling PR** — 1 uncommitted edit:
+  - T07: `cloudflare/terraform.tfvars` — one new `silmarils_ingress_rules` entry
 
 **Open asks (no longer blocking authoring; do block T06 apply)**:
 - `G8-ask.md` filed for silmarils platform owner: confirm 17 lfi-id →
@@ -173,3 +185,21 @@ cluster access).
   the first time setup". G8 owner-input deferred to follow-up; T06
   unblocked with default placeholders documented in `G8-ask.md`'s
   "Defaults applied" section.
+- `2026-05-15` — **T06 DONE** (agent + verified). `kubernetes.yaml`:
+  banner renamed `# 15 — Placeholder (removed)` → `# 15a-b — APISIX
+  (MIT-5211)`; +13 lines for two `block: include_tasks` entries.
+  `variables-qa.yaml`: 144-line `silmarils.apisix.*` block inserted
+  between `gateway_ui` and `connectors` — 17 CN whitelist entries
+  verbatim (F03 markers inline), 17 org_routing entries expanded
+  explicitly (no YAML anchors, matching file convention),
+  `client_certs.passphrase: "password"` (F06),
+  `allowed_egress_pods` (jisr-simulator + mbridge-mock per T05),
+  `allowed_egress_ip_blocks: []`, `dc_tang`, `forward_auth`.
+  Ansible `--syntax-check` clean; `yaml.safe_load` clean. F07 filed:
+  `image.tag: "main"` is a placeholder; T02 CI must run first, then
+  `variables-qa.yaml` updated to the emitted tag before T08 apply.
+- `2026-05-15` — **MIT-5211 authoring phase complete.** T01–T07 all
+  DONE. Only T08 (operator-side apply + smoke + E2E) remains.
+  Silmarils-side: 35 uncommitted local files (T02 + T03 + T04 + T05 +
+  T06 + 17 .p12 copies). Eng-infra-side: 1 uncommitted edit (T07).
+  Both ready to surface as PRs.
