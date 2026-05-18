@@ -72,3 +72,4 @@ Read in this order:
 |---|---|---|
 | `MIT-3467` | DONE (T01–T16; T17 pending) | SonarQube Community Build on AKS + Jenkins integration + GHA PR pipeline. Entry point: `MIT-3467/task/SONAR.md`. |
 | `MIT-5211` | **DONE — live on silmarils-qa** (2026-05-16) | APISIX on silmarils-qa AKS: two-layer ansible (15a base / 15b silmarils LFI overlay) behind Cloudflare Tunnel; APISIX terminates mTLS via `X-Forwarded-Client-Cert`. End-to-end verified at `silmarils-qa-apisix.takamul.cc`. Entry point: `MIT-5211/task/STATE.md`. |
+| `MIT-NEXT-controller-gateway-key-sync` | placeholder — pending Jira number | Surfaced during MIT-5211 verification: dc-tanc → dc-tang `lfi_api_config` sync stopped propagating new inbound-key rows from ~06:00 UTC on 2026-05-18. Entry point: `MIT-NEXT-controller-gateway-key-sync/task/PLAN.md`. |

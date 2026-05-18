@@ -181,6 +181,70 @@ upstream upgrade.
 
 ---
 
+## F12 — dc-tang OWASP ESAPI init exception when processing pacs.009 ISUE
+
+**What**: Once the inbound API key validation passes (HTTP 200), dc-tang
+proceeds to process the pacs.009 body and immediately fails with:
+```
+StsCd: RJCT
+Desc: java.lang.reflect.InvocationTargetException
+      SecurityConfiguration class
+      (org.owasp.esapi.reference.DefaultSecurityConfiguration)
+      CTOR threw exception.
+```
+Confirmed against `silmarils-qa` on 2026-05-18 with a valid plaintext
+key (ADCB) — the ESAPI CTOR fails before any business validation runs.
+
+**Why it matters**: Outside MIT-5211's scope (APISIX is fully proven
+— request reached dc-tang, was authenticated, and was parsed as a
+valid pacs.009.001.12). But it's the immediate next blocker for any
+real ISO API flow through silmarils-qa. The Postman test asserts
+`StsCd = ACCP`; that assertion will fail until ESAPI initialises
+cleanly.
+
+**How we handle it**: Hand off to silmarils application team — this
+is a dc-tang runtime/classpath issue (ESAPI config file missing or
+unreadable, or jvm `-Dorg.owasp.esapi.resources` system property
+pointing at the wrong dir). Out of MIT-5211 scope.
+
+**Do NOT**: Block MIT-5211 verification on this. The HTTP 200 +
+`OrgnlMsgId echo` proves the gateway-side contract.
+
+---
+
+## F11 — Controller→gateway `lfi_api_config` sync stopped propagating
+
+**What**: dc-tanc's `POST /api/v1/organizations/<orgId>/api-config/MBRIDGE_JISR/inbound/generate`
+writes the new key row to the **controller DB**
+(`silmarils_qa_controller`). dc-tang reads from a **separate gateway
+DB** (`silmarils_qa_gateway`). The two DBs sync via Kafka events (per
+the playbook env vars). On 2026-05-18 in silmarils-qa, controller-side
+INSERTs from ~06:00 UTC onward stopped propagating to the gateway DB
+(gateway's newest ADCB row was 05:47 UTC; my key generated at 10:42
+UTC never appeared on the gateway side). Earlier-the-same-day INSERTs
+DID propagate, so this is a regression, not a config gap.
+
+**Why it matters**: Newly-generated API keys cannot authenticate any
+real LFI request until sync resumes. Affects every LFI in
+silmarils-qa, not just ADCB. Pre-existing silmarils platform issue;
+unrelated to MIT-5211 / APISIX.
+
+**How we handle it**: Filed as a separate ticket placeholder under
+`ai-coding-tickets/MIT-NEXT-controller-gateway-key-sync/`. For
+MIT-5211 verification only, applied a one-off `UPDATE` on the gateway
+DB to replace the hash on ADCB's PRIMARY-ACTIVE row with the new
+key's hash (preserves the row identity, sidesteps the
+`uq_lfi_api_config_active` unique constraint, and avoids needing the
+event sync). Restarted dc-tang to drop any in-memory cache. With both
+applied, HTTP 200 proven (`task/verified/T08-tunnel-pacs009-isue-adcb-200.xml`).
+
+**Do NOT**: Use the SQL UPDATE workaround for any real flow. It
+bypasses business logic, audit, and event semantics. Revoke the
+temporary ADCB key (`lfi_MOt6n-C9…`) once the sync is fixed and a
+freshly-generated key propagates cleanly.
+
+---
+
 ## F07 — First-bring-up `image.tag` has no real ACR tag to point at yet
 
 **What**: T02's `apisix-image.yaml` workflow emits
