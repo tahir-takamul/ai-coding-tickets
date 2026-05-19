@@ -243,6 +243,20 @@ bypasses business logic, audit, and event semantics. Revoke the
 temporary ADCB key (`lfi_MOt6n-C9…`) once the sync is fixed and a
 freshly-generated key propagates cleanly.
 
+**Update (2026-05-19)**: A user-supplied key
+`lfi_SJ8jhxqyCRwVaUJ9AuoUBBxkE8Ihs7vOnQvmDodmJvA` also authenticates
+as ADCB and returns HTTP 200 (artefact:
+`task/verified/T08-tunnel-pacs009-isue-adcb-userkey-200.xml`). Its
+hash must match one of the pre-existing ACTIVE rows in the gateway
+DB (likely a 2026-05-14 SECONDARY entry). This **does not change the
+F11 root cause** — the controller→gateway sync for *new* generations
+is still broken. It just means there's a known-good key we can use
+for ongoing smoke testing without depending on the SQL workaround.
+The workaround (UPDATE on PRIMARY-ACTIVE) and the orphan controller
+key are **intentionally left in place** pending F11 investigation
+(per user direction 2026-05-19); will be reverted as part of the
+follow-up ticket's cleanup definition-of-done.
+
 ---
 
 ## F07 — First-bring-up `image.tag` has no real ACR tag to point at yet

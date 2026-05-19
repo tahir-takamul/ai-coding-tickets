@@ -54,8 +54,24 @@
   forward-auth → dc-tang reached, responded with structured "no valid
   API key" — real traffic with a real API key would get 200)
 - Bad CN → **403** "certificate validation failed" ✓
+- GET `/healthz` → **200** `{"status":"ok",…}` ✓ (no cert; mocking plugin)
 
-Artefacts under `task/verified/`.
+### Deepest end-to-end results (2026-05-18 / 2026-05-19)
+- POST `/api/v1/issuance-platform` with ADCB cert + real pacs.009.001.12
+  body + a hash-matching `X-LFI-API-KEY` → **HTTP 200** with
+  admi.098.001.01 receipt that echoes `OrgnlMsgId` and recognises
+  `OrgnlMsgNmId=pacs.009.001.12` ✓
+- Both `lfi_MOt6n-C9…` (the temporary key created during MIT-5211
+  verification via the SQL workaround) and the user-supplied
+  `lfi_SJ8jhxqy…` produce the same HTTP 200 ✓
+- Body `StsCd=RJCT` is **F12** territory (dc-tang OWASP ESAPI CTOR
+  exception); outside MIT-5211 / APISIX scope.
+
+Artefacts under `task/verified/`:
+- `T08-tunnel-healthz-200.json`
+- `T08-tunnel-nocert-403.txt`, `T08-tunnel-badcn-403.txt`, `T08-tunnel-valid-fab-401.xml`
+- `T08-tunnel-pacs009-isue-adcb-200.xml` (SQL-workaround key)
+- `T08-tunnel-pacs009-isue-adcb-userkey-200.xml` (user-supplied key)
 
 **Open asks (no longer blocking authoring; do block T06 apply)**:
 - `G8-ask.md` filed for silmarils platform owner: confirm 17 lfi-id →

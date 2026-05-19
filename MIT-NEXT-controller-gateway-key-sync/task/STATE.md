@@ -41,3 +41,12 @@ None — the ticket is filed as a placeholder. Pick up when prioritised.
 - `2026-05-18` — Ticket folder created during MIT-5211 wrap-up. Symptom
   captured in PLAN.md. Workaround documented; same workaround used to
   unblock MIT-5211 final verification.
+- `2026-05-19` — Per user direction, MIT-5211 SQL workaround and orphan
+  controller key intentionally left in place pending this ticket's
+  investigation. Cleanup is part of this ticket's definition-of-done
+  (PLAN.md §"What 'done' looks like" — bullet 4). A separate
+  user-supplied known-good key
+  (`lfi_SJ8jhxqyCRwVaUJ9AuoUBBxkE8Ihs7vOnQvmDodmJvA`) is now in use for
+  ongoing MIT-5211 smoke testing and is independent of the workaround;
+  do not revoke it as part of this ticket's cleanup unless the user
+  asks.
