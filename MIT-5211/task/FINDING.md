@@ -181,7 +181,28 @@ upstream upgrade.
 
 ---
 
-## F12 — dc-tang OWASP ESAPI init exception when processing pacs.009 ISUE
+## F12 — dc-tang OWASP ESAPI init exception when processing pacs.009 ISUE — **RESOLVED 2026-05-19**
+
+**RESOLVED (2026-05-19 ~12:00 UTC)** — silmarils backend hotfix
+landed as image `silmarils:release-v-131-20260519-153320`. dc-tang pod
+restarted with the new image; pacs.009 ISUE through the MIT-5211
+gateway now returns `HTTP 200 + StsCd=ACCP + Desc="Request accepted and
+queued for processing"`. Verified artefact:
+`task/verified/T08-tunnel-pacs009-isue-adcb-ACCP-200.xml`.
+
+Full workflow log shows `CheckIssuanceRequestWorkflowStep COMPLETED`
+in 361ms, followed by dispatch to the controller (`centralbank.ae`)
+via the in-memory router, and routing to the scheduler. State
+persisted to `silmarils_qa_gateway` via `AuditedStateRepositoryImpl` +
+`LiveStateRepositoryImpl`. End-to-end ISO API pipeline is now
+functional.
+
+Handover doc `F12-fix-handover.md` retained as a historical
+root-cause walkthrough.
+
+---
+*(original finding below; kept for context)*
+
 
 **What**: Once the inbound API key validation passes (HTTP 200), dc-tang
 proceeds to process the pacs.009 body and immediately fails with:
