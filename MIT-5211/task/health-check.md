@@ -1,8 +1,17 @@
 # Health Check — APISIX on silmarils-qa AKS (MIT-5211)
 
-> Two copy-paste curl commands to verify the APISIX LFI edge is
-> healthy end-to-end. Both run from any laptop with internet access —
-> no VPN, no kubeconfig, no Cloudflare Access auth required.
+> Three copy-paste curl commands to verify the APISIX LFI edge is
+> healthy end-to-end. All three run from any laptop with internet
+> access — no VPN, no kubeconfig, no Cloudflare Access auth required.
+>
+> **Depth ladder**: each next test exercises one more layer than the
+> previous. Run them in order on a fresh suspicion.
+>
+> | # | Test | Layers exercised | Expected |
+> |---|---|---|---|
+> | 1 | `GET /healthz` | DNS + CF Edge + Tunnel + cloudflared + Service + APISIX `mocking` plugin | HTTP 200 |
+> | 2 | `POST /api/v1/issuance-platform` (no key) | + APISIX `cert-validator` + APISIX `proxy-rewrite` + dc-tang ISO API auth filter | HTTP 401 — structured pacs receipt, "Missing X-LFI-API-KEY" |
+> | 3 | `POST /api/v1/issuance-platform` (with key) | + dc-tang inbound-key validation | HTTP 200 — pacs.009 parsed, OrgnlMsgId echoed (StsCd may RJCT for F12 reasons — see below) |
 
 ---
 
@@ -149,6 +158,115 @@ the same way. Replace the `.p12` path in the `openssl pkcs12` step.
 
 (All `.p12`s share the same passphrase `"password"` — silmarils
 convention.)
+
+---
+
+## 3) HTTP 200 happy-path — pacs.009 ISUE with a valid inbound key
+
+Same shape as **§2**, but adds an `X-LFI-API-KEY` header whose plaintext
+hashes to one of the active rows in dc-tang's gateway DB. With auth
+satisfied, dc-tang returns `HTTP 200` with the pacs.009 fully parsed
+and `OrgnlMsgId` / `OrgnlMsgNmId=pacs.009.001.12` echoed back in the
+`admi.098.001.01` receipt.
+
+The receipt body may still carry `StsCd: RJCT` for a reason
+unrelated to the gateway — see **F12** in `FINDING.md` (dc-tang
+OWASP ESAPI `DefaultSecurityConfiguration` CTOR throws at message
+processing time). That is **outside MIT-5211 / APISIX scope**: the
+HTTP 200 + `OrgnlMsgId echoed` is the canonical "gateway-side path
+fully exercised" signal.
+
+### Getting a valid `X-LFI-API-KEY`
+
+1. **Easiest right now (silmarils-qa)** — ask the silmarils platform
+   team for a current ACTIVE inbound key for an LFI (e.g. ADCB).
+   The plaintext is only returned at the moment of generation; dc-tanc
+   stores only the hash afterwards, so an older key can't be
+   "looked up" — it has to come from whoever kept the plaintext.
+2. **Once F11 is fixed** — generate a fresh one yourself via dc-tanc:
+   ```bash
+   # SYSTEM_ADMIN token (QA test creds checked into the postman collection)
+   TOKEN=$(curl -sS -X POST \
+     "https://silmarils-keycloak.takamul.cc/realms/CbUsers/protocol/openid-connect/token" \
+     -d 'grant_type=password' -d 'client_id=CB' -d 'client_secret=noSecret' \
+     -d 'username=bob.miller@centralbank.com' -d 'password=bob' \
+     | jq -r '.access_token')
+
+   # ADCB org id (look up via /api/v1/organizations on dc-tanc if testing another bank)
+   ORG_ID=45b3c30b-b576-495b-9db9-12fe82bc7021
+
+   # dc-tanc is behind CF Access — port-forward to bypass for service-to-service calls
+   kubectl -n silmarils-qa port-forward svc/dc-tanc 18888:18888 &
+
+   curl -ksS -X POST \
+     "https://localhost:18888/api/v1/organizations/$ORG_ID/api-config/MBRIDGE_JISR/inbound/generate" \
+     -H "Authorization: Bearer $TOKEN" -H "Content-Type: application/json" \
+     --data '{"keyType":"PRIMARY","expiryValue":90,"expiryUnit":"DAYS"}' \
+     | jq '.result.apiKey'   # this is the only chance to capture the plaintext
+   ```
+   While F11 is open this will write the key to controller DB but it
+   will NOT propagate to gateway DB; auth will fail until sync is
+   restored. See `MIT-NEXT-controller-gateway-key-sync/`.
+
+### The curl
+
+```bash
+# Put the QA key in your shell — DO NOT commit literal values to this file.
+export ADCB_API_KEY='<paste current ACTIVE key from platform team>'
+
+# One-time: extract ADCB cert
+openssl pkcs12 \
+  -in ~/DevWorkspace/apisix/silmarils/apisix/client-certs/abudhabicommercialbank.p12 \
+  -clcerts -nokeys -nodes -passin pass:password 2>/dev/null \
+  | openssl x509 -outform PEM > /tmp/adcb.pem
+
+# Each test: POST the real pacs.009 ISUE payload through APISIX
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H 'Accept: text/xml' \
+  -H "X-Forwarded-Client-Cert: $(jq -sRr @uri < /tmp/adcb.pem)" \
+  -H "X-LFI-API-KEY: ${ADCB_API_KEY}" \
+  --data-binary @"$HOME/DevWorkspace/apisix/silmarils/apisix/qa-tests/issuance-request-soap.xml"
+```
+
+**Expected response**
+
+```http
+HTTP/2 200
+content-type: text/xml; charset=UTF-8
+
+<SOAP-ENV:Envelope …>
+  …
+  <ns2:RctDtls>
+    <ns2:ReqHdlg>
+      <ns2:OrgnlMsgId>{your MsgId}</ns2:OrgnlMsgId>     ← proves dc-tang parsed your request
+      <ns2:OrgnlMsgNmId>pacs.009.001.12</ns2:OrgnlMsgNmId> ← proves message-type recognised
+      <ns2:StsCd>{ACCP|RJCT}</ns2:StsCd>
+      <ns2:Desc>…</ns2:Desc>
+    </ns2:ReqHdlg>
+  </ns2:RctDtls>
+  …
+```
+
+Two outcomes are both "gateway path verified":
+
+- `StsCd: ACCP` — happy path, dc-tang accepted the issuance for processing.
+- `StsCd: RJCT` with `Desc: …InvocationTargetException…ESAPI…` —
+  F12 dc-tang application bug; auth + parsing succeeded. HTTP 200 +
+  the OrgnlMsgId echo is what proves the gateway side.
+
+Any other `StsCd: RJCT` with `Desc: Authentication failed` (or
+"Missing X-LFI-API-KEY") means the key didn't hash-match against an
+active row in gateway DB — refresh per "Getting a valid X-LFI-API-KEY"
+above.
+
+### Swap to another bank
+
+Same as **§2** — change the `.p12` source and the `ORG_ID` (for the
+key generation only). The pacs.009 payload itself can stay
+ADCB-flavoured for a smoke test; dc-tang's content-level validation
+of LEI / account ID against the authenticated LFI is what would
+escalate beyond a smoke.
 
 ---
 
