@@ -214,7 +214,352 @@ content-type: text/xml; charset=UTF-8
 
 ---
 
-## 3. Troubleshooting tree
+## 3. Test matrix — happy / sad / edge with verified expected responses
+
+All 11 cases below were **executed live** against
+`silmarils-qa-apisix.takamul.cc` on 2026-05-19 and the responses
+recorded verbatim. Use them as a regression baseline.
+
+### Summary
+
+| ID | Category | What it sends | HTTP | Body shape | Rejected by | Verdict if seen |
+|---|---|---|---|---|---|---|
+| **H1** | happy | `GET /healthz` (no cert, no payload) | **200** | `{"status":"ok",…}` | — (responded by APISIX `mocking` plugin) | Gateway is reachable end-to-end. |
+| **H2** | happy | pacs.009 ISUE with valid ADCB cert + valid `X-LFI-API-KEY` | **200** | `admi.098.001.01` receipt, `OrgnlMsgId` echoed, `StsCd=RJCT` with ESAPI Desc (F12) | — (dc-tang processed) | Gateway path fully proven. RJCT body is dc-tang F12 (separate bug). |
+| **S1** | sad | POST issuance with **no cert** | **403** | `{"error":"client certificate required"}` | APISIX `cert-validator` | Cert-required check is enforced. |
+| **S2** | sad | POST issuance with **self-signed cert** (unknown CN) | **403** | `{"error":"certificate validation failed"}` | APISIX `cert-validator` | CN-whitelist check is enforced. |
+| **S3** | sad | POST issuance with valid cert but **no API key** | **401** | `admi.098.001.01`, `StsCd=RJCT`, `Desc=Missing X-LFI-API-KEY header` | dc-tang `LfiApiAuthFilter` | Cert passed, dc-tang spoke. API-key check is enforced. |
+| **S4** | sad | POST issuance with valid cert but **bogus API key** | **401** | `admi.098.001.01`, `StsCd=RJCT`, `Desc=Authentication failed` | dc-tang `LfiApiAuthFilter` | Cert passed, dc-tang spoke. Key-hash mismatch correctly rejected. |
+| **S5** | sad | POST issuance with valid cert + valid key + **stale repo payload** (`silmarils/apisix/qa-tests/issuance-request-soap.xml`, lacks `<Document>` wrapper) | **404** | empty (Spring-Security headers) | dc-tang Spring-WS `EndpointNotFound` | dc-tang received the request but can't route a payload missing the pacs.009.001.12 namespace wrapper. (Stale-repo-file finding.) |
+| **E1** | edge | `GET` on the POST-only `/api/v1/issuance-platform` | **404** | `{"error_msg":"404 Route Not Found"}` | APISIX route matcher | Method-restricted route enforces method. |
+| **E2** | edge | POST to a totally unknown path | **404** | `{"error_msg":"404 Route Not Found"}` | APISIX route matcher | No unintended catch-all. |
+| **E3** | edge | `POST` to `/healthz` (which is GET-only) | **404** | `{"error_msg":"404 Route Not Found"}` | APISIX route matcher | /healthz is a strict GET. |
+| **E4** | edge | POST issuance valid cert + valid key + **empty body** | **400** | empty (Spring-Security headers) | dc-tang request parser | Cert + auth pass; dc-tang correctly rejects unparseable body. |
+| **E5** | edge | POST directly to `/iso/api/v1/issuance-platform` (the rewritten path APISIX uses internally) | **404** | `{"error_msg":"404 Route Not Found"}` | APISIX route matcher | **Security**: dc-tang's internal path is NOT exposed publicly — cert-validator cannot be bypassed by skipping the public prefix. |
+
+### Two distinct 404 shapes — useful to know which side rejected
+
+- `{"error_msg":"404 Route Not Found"}` — APISIX (no matching route).
+- Empty body + Spring-Security headers (`vary: Origin`, `expires: 0`, `pragma: no-cache`, `x-frame-options: DENY`) — dc-tang.
+
+### Detailed cases
+
+The shell variables below are set once and reused:
+
+```bash
+# Prereqs (run once per terminal)
+openssl pkcs12 -in ~/DevWorkspace/apisix/silmarils/apisix/client-certs/abudhabicommercialbank.p12 \
+  -clcerts -nokeys -nodes -passin pass:password 2>/dev/null \
+  | openssl x509 -outform PEM > /tmp/adcb.pem
+ADCB_CERT=$(jq -sRr @uri < /tmp/adcb.pem)
+API_KEY='<PASTE_VALID_ADCB_KEY_HERE>'
+
+# Pacs.009 ISUE template lives at /tmp/pacs009-isue.xml — see §2 Level 3 above.
+```
+
+#### H1 — `/healthz` liveness
+
+```bash
+curl -i https://silmarils-qa-apisix.takamul.cc/healthz
+```
+
+```http
+HTTP/2 200
+content-type: application/json
+server: cloudflare
+content-length: 44
+
+{"status":"ok","service":"apisix-silmarils"}
+```
+
+---
+
+#### H2 — full pacs.009 ISUE happy path
+
+```bash
+# (regenerate dynamic fields in /tmp/pacs009-isue.xml — see §2 Level 3 step b)
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' -H 'Accept: text/xml' \
+  -H "X-Forwarded-Client-Cert: $ADCB_CERT" \
+  -H "X-LFI-API-KEY: $API_KEY" \
+  --data-binary @/tmp/pacs009-isue.xml
+```
+
+```http
+HTTP/2 200
+content-type: text/xml; charset=UTF-8
+
+<SOAP-ENV:Envelope …>
+  <SOAP-ENV:Header>
+    <MsgTp>admi.098.001.01</MsgTp>
+    <Network>MBRIDGE</Network>
+    …
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns2:Document xmlns:ns2="urn:iso:std:iso:20022:tech:xsd:admi.098.001.01">
+      <ns2:Rct>
+        <ns2:RctDtls><ns2:ReqHdlg>
+          <ns2:OrgnlMsgId>{your-MsgId}</ns2:OrgnlMsgId>
+          <ns2:OrgnlMsgNmId>pacs.009.001.12</ns2:OrgnlMsgNmId>
+          <ns2:StsCd>RJCT</ns2:StsCd>
+          <ns2:Desc>java.lang.reflect.InvocationTargetException SecurityConfiguration class
+                    (org.owasp.esapi.reference.DefaultSecurityConfiguration) CTOR threw exception.</ns2:Desc>
+        </ns2:ReqHdlg></ns2:RctDtls>
+      </ns2:Rct>
+    </ns2:Document>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+`StsCd=RJCT` is **finding F12** (dc-tang OWASP ESAPI init bug), not a
+gateway issue. HTTP 200 + `OrgnlMsgId` echo + `OrgnlMsgNmId=pacs.009.001.12`
+prove the gateway side end-to-end. When dc-tang's ESAPI is fixed,
+expect `StsCd=ACCP`.
+
+---
+
+#### S1 — no client cert
+
+```bash
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' --data 'x'
+```
+
+```http
+HTTP/2 403
+content-type: application/json
+server: cloudflare
+
+{"error":"client certificate required"}
+```
+
+---
+
+#### S2 — self-signed cert with unknown CN
+
+```bash
+# Generate a throwaway self-signed cert with an unknown CN
+openssl req -x509 -newkey rsa:2048 -days 1 -nodes \
+  -keyout /tmp/bad.key -out /tmp/bad.pem \
+  -subj '/CN=system@unknownbank.com' 2>/dev/null
+BAD_CERT=$(jq -sRr @uri < /tmp/bad.pem)
+
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H "X-Forwarded-Client-Cert: $BAD_CERT" \
+  --data 'x'
+```
+
+```http
+HTTP/2 403
+content-type: application/json
+server: cloudflare
+
+{"error":"certificate validation failed"}
+```
+
+---
+
+#### S3 — valid cert, no API key
+
+```bash
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H "X-Forwarded-Client-Cert: $ADCB_CERT" \
+  --data 'x'
+```
+
+```http
+HTTP/2 401
+content-type: text/xml; charset=UTF-8
+
+<SOAP-ENV:Envelope …>
+  <SOAP-ENV:Header>
+    <MsgTp>admi.098.001.01</MsgTp>
+    <Network>mBridge</Network>
+    …
+  </SOAP-ENV:Header>
+  <SOAP-ENV:Body>
+    <ns2:Document …>
+      <ns2:Rct><ns2:RctDtls><ns2:ReqHdlg>
+        <ns2:StsCd>RJCT</ns2:StsCd>
+        <ns2:Desc>Missing X-LFI-API-KEY header</ns2:Desc>
+      </ns2:ReqHdlg></ns2:RctDtls></ns2:Rct>
+    </ns2:Document>
+  </SOAP-ENV:Body>
+</SOAP-ENV:Envelope>
+```
+
+---
+
+#### S4 — valid cert, bogus API key
+
+```bash
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H "X-Forwarded-Client-Cert: $ADCB_CERT" \
+  -H "X-LFI-API-KEY: lfi_thisIsNotARealKey0000000000000000000000" \
+  --data 'x'
+```
+
+```http
+HTTP/2 401
+content-type: text/xml; charset=UTF-8
+
+<SOAP-ENV:Envelope …>
+  …
+  <ns2:StsCd>RJCT</ns2:StsCd>
+  <ns2:Desc>Authentication failed</ns2:Desc>
+  …
+</SOAP-ENV:Envelope>
+```
+
+Same shape as S3, different `Desc` — useful to confirm the auth
+filter ran (vs the "missing header" early-exit).
+
+---
+
+#### S5 — valid cert + valid key + stale payload (no Document wrapper)
+
+```bash
+# /Users/.../qa-tests/issuance-request-soap.xml has <FICdtTrf> directly
+# under <SOAP-ENV:Body>, not wrapped in <Document xmlns="…pacs.009.001.12">.
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H "X-Forwarded-Client-Cert: $ADCB_CERT" \
+  -H "X-LFI-API-KEY: $API_KEY" \
+  --data-binary @"$HOME/DevWorkspace/apisix/silmarils/apisix/qa-tests/issuance-request-soap.xml"
+```
+
+```http
+HTTP/2 404
+content-length: 0
+server: cloudflare
+strict-transport-security: max-age=31536000 ; includeSubDomains
+vary: Origin
+vary: Access-Control-Request-Method
+vary: Access-Control-Request-Headers
+x-content-type-options: nosniff
+x-frame-options: DENY
+cache-control: no-cache, no-store, max-age=0, must-revalidate
+…
+(empty body)
+```
+
+This is **dc-tang's** 404 (Spring-Security defaults). dc-tang log
+line at this moment:
+```
+LFI authenticated: lfi-ADCB (scope=MBRIDGE_JISR)
+No endpoint mapping found for [SaajSoapMessage FICdtTrf]
+```
+
+The stale repo payload is a known issue — use the §2 Level 3
+template instead.
+
+---
+
+#### E1 — GET on the POST-only route
+
+```bash
+curl -i "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform"
+```
+
+```http
+HTTP/2 404
+content-type: application/json
+server: cloudflare
+
+{"error_msg":"404 Route Not Found"}
+```
+
+---
+
+#### E2 — POST to an unknown path
+
+```bash
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/totally-fake" \
+  -H 'Content-Type: text/xml' --data 'x'
+```
+
+```http
+HTTP/2 404
+content-type: application/json
+
+{"error_msg":"404 Route Not Found"}
+```
+
+---
+
+#### E3 — POST on the GET-only `/healthz`
+
+```bash
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/healthz" --data 'x'
+```
+
+```http
+HTTP/2 404
+content-type: application/json
+
+{"error_msg":"404 Route Not Found"}
+```
+
+---
+
+#### E4 — empty body with valid cert + valid key
+
+```bash
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H "X-Forwarded-Client-Cert: $ADCB_CERT" \
+  -H "X-LFI-API-KEY: $API_KEY" \
+  --data ''
+```
+
+```http
+HTTP/2 400
+content-length: 0
+server: cloudflare
+vary: Origin
+…Spring-Security default headers…
+(empty body)
+```
+
+dc-tang received the request (cert + auth passed) but rejected the
+empty body with 400. Useful proof that **the auth pipeline runs
+before the body parser** — bad bodies fail differently from auth
+failures.
+
+---
+
+#### E5 — try to skip the public prefix (security check)
+
+```bash
+# Attempt to hit dc-tang's internal path directly through APISIX,
+# bypassing the proxy-rewrite + cert-validator chain.
+curl -i -X POST "https://silmarils-qa-apisix.takamul.cc/iso/api/v1/issuance-platform" \
+  -H 'Content-Type: text/xml' \
+  -H "X-Forwarded-Client-Cert: $ADCB_CERT" \
+  -H "X-LFI-API-KEY: $API_KEY" \
+  --data-binary @/tmp/pacs009-isue.xml
+```
+
+```http
+HTTP/2 404
+content-type: application/json
+
+{"error_msg":"404 Route Not Found"}
+```
+
+**This is the right answer.** The `/iso/api/v1/…` path is *only* an
+internal rewrite target; it is **not** a registered APISIX route on
+the public hostname. There's no way to reach dc-tang's endpoint
+without going through the public `/api/v1/issuance-platform` path,
+which means `cert-validator` cannot be bypassed. Treat any 200/401
+on this URL as a critical-severity regression.
+
+---
+
+## 4. Troubleshooting tree
 
 | Symptom | Most likely cause |
 |---|---|
@@ -229,7 +574,7 @@ content-type: text/xml; charset=UTF-8
 
 ---
 
-## 4. Swap to another bank
+## 5. Swap to another bank
 
 All 17 banks have a `.p12` in `silmarils/apisix/client-certs/`.
 Replace the file name in the `openssl pkcs12 -in …` step:
@@ -269,7 +614,7 @@ this smoke.
 
 ---
 
-## 5. What to report when filing a bug
+## 6. What to report when filing a bug
 
 Whether the test passes or fails, include in your report:
 
@@ -288,7 +633,7 @@ end-to-end.
 
 ---
 
-## 6. Reference
+## 7. Reference
 
 - **Architecture diagram + per-layer breakdown**:
   `MIT-5211/task/health-check.md`.
