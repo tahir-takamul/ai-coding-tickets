@@ -181,6 +181,65 @@ upstream upgrade.
 
 ---
 
+## F13 — APISIX `forward-auth` ssl_verify=true breaks `/api/commercial` + `/api/mbridge` — **RESOLVED 2026-06-02**
+
+**What**: routes `/api/commercial` and `/api/mbridge` were 403-ing every
+request before reaching dc-tang. APISIX `error.log` revealed:
+
+```
+[warn] forward-auth.lua:143: phase_func():
+  failed to process forward auth, err: 19:
+  self-signed certificate in certificate chain
+[warn] forward-auth exits with http status code 403
+```
+
+`err: 19` = OpenSSL `X509_V_ERR_SELF_SIGNED_CERT_IN_CHAIN`. APISIX's
+`forward-auth` plugin (lua-resty-http under the hood) was calling
+`https://dc-tang.silmarils-qa.svc.cluster.local:28888/auth/inbound`
+with `ssl_verify: true`. APISIX's TLS trust store does not include the
+silmarils internal CA (`silmarils-ca-issuer`, rooted at `selfsigned-issuer`
+per `04-ca-certificates.yaml`) → handshake aborted before any HTTP
+request was sent → 403 returned to the client (the openresty HTML
+403 page, not the cert-validator JSON `{"error":…}` shape).
+
+**Why it matters**: every `/api/commercial` and `/api/mbridge` request
+failed at the gateway, regardless of how valid the `X-LFI-API-KEY`
+was. `/api/v1/issuance-platform` was unaffected because that route
+has no `forward-auth` step — dc-tang validates the key directly when
+the body arrives.
+
+**How we handled it (2026-06-02)**: `silmarils.apisix.forward_auth.ssl_verify`
+changed from `true` to `false` in `variables-qa.yaml`. Silmarils
+commit `701fa801` on branch `MIT-5211`. Live CM patched +
+`kubectl rollout restart deploy/apisix` to pick up the new subPath
+mount. Re-verified: same curl returns 401 (correct: dc-tang rejects
+the invalid key) instead of 403. APISIX `error.log` now shows
+`forward-auth exits with http status code 401` — the upstream
+status is propagated, confirming the call is reaching dc-tang.
+
+**Trust-boundary rationale**: the in-cluster trust boundary is
+already enforced by the apisix NetworkPolicy (only `cloudflared` can
+reach APISIX; APISIX → dc-tang is east-west on the cluster fabric).
+This matches the local-docker convention where `setup-certs.sh` also
+sets `ssl_verify: false`. APISIX will emit a security-risk warning at
+init time (`check_tls_bool(): Keeping ssl_verify disabled in
+forward-auth configuration is a security risk`) — that's expected
+and documented inline in `variables-qa.yaml`.
+
+**Followup (out of scope)**: mount `silmarils-ca-secret`
+(`/usr/local/apisix/certs/ca.pem` already exists for the bank CA
+bundle, separate mount) into APISIX, configure a Lua-side trusted CA
+list, and re-enable `ssl_verify: true`. Defer until there's a
+reason to harden this hop (e.g. mTLS to dc-tang).
+
+**Do NOT**: blanket-disable `ssl_verify` in upstream routes —
+this finding is specifically scoped to the `forward-auth` plugin's
+internal HTTPS call. The APISIX→dc-tang main upstream traffic
+(for `/api/v1/issuance-platform`) uses a separate code path that
+already handles untrusted internal CAs at the right verification level.
+
+---
+
 ## F12 — dc-tang OWASP ESAPI init exception when processing pacs.009 ISUE — **RESOLVED 2026-05-19**
 
 **RESOLVED (2026-05-19 ~12:00 UTC)** — silmarils backend hotfix
