@@ -181,6 +181,93 @@ upstream upgrade.
 
 ---
 
+## F15 — Upstream nodes use local-docker short hostnames instead of K8s FQDNs — **RESOLVED 2026-06-02**
+
+**What**: After F13 + F14, `/api/commercial` started reaching the
+upstream dispatch step but APISIX errored:
+```
+[error] resolver.lua:80: failed to parse domain: jisr-simulator,
+        error: failed to query the DNS server: dns server error: 3 name error
+[error] handle_upstream(): failed to set upstream: no valid upstream node
+```
+Result: 503 from APISIX.
+
+**Cause**: `apisix-routes.yaml.j2` transcribed the upstream node lists
+verbatim from local-docker `apisix.yaml.template`:
+- `"jisr-simulator:8080"` (upstream id 2)
+- `"mbridge-simulator:8080"` (upstream id 3)
+
+Short hostnames work in docker-compose service discovery but not in K8s
+from the `apisix-silmarils` namespace (DNS search path would expand
+`jisr-simulator` to `jisr-simulator.apisix-silmarils.svc.cluster.local`,
+which doesn't exist).
+
+**Fix**: use FQDN, parameterised by env:
+- `jisr-simulator.silmarils-{{ silmarils_environment }}.svc.cluster.local:8080`
+- `mbridge-mock.silmarils-{{ silmarils_environment }}.svc.cluster.local:8080`
+  (note: actual k8s service name is `mbridge-mock`, not
+  `mbridge-simulator` — divergence from local-docker)
+
+Silmarils commit `38e8e6f8`. Live CM patched + rollout restart.
+
+**Verified**: same curl now returns HTTP 200 with a structured SOAP
+receipt from `jisr-simulator`. `StsCd: FAIL / 20S9999:other system error`
+in body is the simulator's app-level rejection of the gccc.200.001.01
+payload shape — outside MIT-5211 scope.
+
+**Note about `org-router` dynamic routing**: org-router.lua sets
+`ctx.var.upstream_host/port/scheme` per request based on `X-LFI-ID`,
+but the upstream resource's `nodes` list still needs at least one
+resolvable entry for APISIX to construct the upstream connection
+pool. With all 17 LFIs currently mapped to the same jisr-simulator,
+the static node + dynamic Host header land at the same place. If
+per-LFI fan-out to different real banks comes online, revisit the
+APISIX upstream config (consider `traffic-split` or a passthrough
+DNS resolver).
+
+---
+
+## F14 — `apisix-org-routing` CM emitted flat dict; plugin expects `{ "org_routing": ... }` — **RESOLVED 2026-06-02**
+
+**What**: After F13, every `/api/commercial` request 404'd with body
+`{"error":"unknown org: lfi-ADCB"}`. APISIX `error.log` showed:
+```
+[warn] org-router.lua:96: phase_func():
+       org-router: no upstream found for org=lfi-ADCB
+[warn] org-router exits with http status code 404
+```
+
+**Cause**: `apisix-org-routing.yaml.j2` rendered the var dict directly
+into `org_routing.json` as a flat top-level object:
+```json
+{ "lfi-ADCB": {...}, "lfi-ADIB": {...}, ... }
+```
+But `silmarils/apisix/plugins/org-router.lua:91` reads:
+```lua
+local upstream = routing_cfg.org_routing and routing_cfg.org_routing[org_id]
+```
+Plugin expects `{ "org_routing": { ... } }` (the wrapper exists in the
+local-docker file `silmarils/apisix/org_routing.json`). Without the
+wrapper, `routing_cfg.org_routing` is nil, the `and` short-circuits,
+every LFI gets 404.
+
+**Fix**: wrap the var dict before serialisation:
+```jinja
+org_routing.json: |
+    {{ {"org_routing": silmarils.apisix.org_routing} | to_nice_json | indent(4) }}
+```
+Silmarils commit `38e8e6f8`. Live CM patched + rollout restart.
+
+**Verified**: org-router lookup succeeds for `lfi-ADCB` (and all 17
+LFIs); pipeline progresses to the upstream dispatch step (where F15
+took over).
+
+**Do NOT**: change the plugin to accept the flat shape — the local-
+docker source-of-truth uses the wrapped shape, and our QA config
+needs to match for plugin behaviour parity.
+
+---
+
 ## F13 — APISIX `forward-auth` ssl_verify=true breaks `/api/commercial` + `/api/mbridge` — **RESOLVED 2026-06-02**
 
 **What**: routes `/api/commercial` and `/api/mbridge` were 403-ing every
